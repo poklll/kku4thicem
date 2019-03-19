@@ -1,5 +1,6 @@
 var table = [];
 var team;
+var currentround;
 Number.prototype.pad = function(size) {
   var s = String(this);
   while (s.length < (size || 2)) {s = "0" + s;}
@@ -7,7 +8,7 @@ Number.prototype.pad = function(size) {
 }
 
 function roundstart(round)
-{
+{   currentround = round;
     document.getElementById("round-info").firstElementChild.innerHTML = round;
     document.getElementById("round-info").style.visibility = "visible";
 }

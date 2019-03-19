@@ -46,7 +46,7 @@
       }
       document.getElementById("question-info-text").innerHTML = questioninfo;
       question = data;
-      document.getElementById("head").innerHTML = data.section;
+      document.getElementById("head").innerHTML = currentround + " " +data.section;
       document.getElementById("text").innerHTML = data.question;
       document.getElementById("clock").innerHTML = tomin(data.time);
     });
