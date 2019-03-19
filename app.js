@@ -30,6 +30,13 @@ router.get('/stage', function (req, res) {
 });
 app.use('/', router);
 
+if (process.env.NODE_ENV === 'production') {
+	app.use(express.static('client/build'));
+}
+app.get('*', (request, response) => {
+	response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
+
 var io = require('socket.io')(http);
 var table = []; //abbr,name,country,score
 var questions = []; //section,question,score,time
