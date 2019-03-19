@@ -140,7 +140,7 @@ function readsheet(auth) {
       rows.map((row) => {
         questions.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5], level: row[6] });
       });
-      console.log(questions);
+   
     } else {
       console.log('No data found.');
     }
