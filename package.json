@@ -11,7 +11,11 @@
     "socket.io": "^2.2.0"
   },
   "devDependencies": {},
-  "scripts": {},
+  "scripts": {"start": "node app.js"},
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": "11.12.0"
+  }
+  
 }
