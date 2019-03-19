@@ -168,13 +168,13 @@ function readsheet(auth) {
   });
   sheets.spreadsheets.values.get({
     spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
-    range: 'Sudden Death!A2:C',
+    range: 'Sudden Death!A2:D',
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
     if (rows.length) {
       rows.map((row) => {
-        suddendeathquestion.push({ section: row[0], question: row[1], answer: row[2] });
+        suddendeathquestion.push({ section: row[0], question: row[1], answer: row[2],time: row[3] });
       });
 
     } else {
@@ -312,6 +312,7 @@ io.on('connection', function (socket) {
 
   socket.on('roundstart', function (data) {
     CurrentRound = data;
+    console.log(CurrentRound);
     roundsetup(CurrentRound);
     io.sockets.emit('round', data);
     io.sockets.emit('setquestionlist', questions);
@@ -412,21 +413,22 @@ function roundsetup(round) {
       questions = resuscitationquestion;
       break;
     case "sudden death":
-      question = suddendeathquestion;
+      questions = suddendeathquestion;
       break;
     case "final:the fast":
-      question = finalfastquestion;
+      questions = finalfastquestion;
       break;
     case "final:the leader":
-      question = finalleaderquestion;
+      questions = finalleaderquestion;
       break;
     case "final:the error detector":
-      question = finalerrorquestion;
+      questions = finalerrorquestion;
       break;
 
   }
+ // console.log(questions);
   currentquestionnumber = 0;
-  
+
 
 
 

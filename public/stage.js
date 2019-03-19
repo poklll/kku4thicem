@@ -52,3 +52,8 @@ Array.prototype.findindexbyabbr = function(name)
   }
 
 };
+
+function tomin(time)
+{
+  return Math.floor(time / 60) + "." + (time % 60).pad(2);
+}

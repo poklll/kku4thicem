@@ -29,11 +29,26 @@
     socket.on('setquestion', function (data) {
       document.getElementById("round-info").style.visibility = "hidden";
       document.getElementById("question-info").style.visibility = "visible";
-      document.getElementById("question-info").firstChild.innerHTML = "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + data.time;
+      var questioninfo;
+      if(data.level == undefined && data.score == undefined )
+      {
+        questioninfo = "Time: " + tomin(data.time)+" min";    
+      }
+      else
+      if(data.level == undefined)
+      {
+        questioninfo = "Score: " + data.score + "<br>" + "Time: " + tomin(data.time)+" min";
+      }
+      else
+      {
+        questioninfo = "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time)+" min";
+
+      }
+      document.getElementById("question-info-text").innerHTML = questioninfo;
       question = data;
       document.getElementById("head").innerHTML = data.section;
       document.getElementById("text").innerHTML = data.question;
-      document.getElementById("clock").innerHTML = Math.floor(data.time / 60) + "." + (data.time % 60).pad(2);
+      document.getElementById("clock").innerHTML = tomin(data.time);
     });
     socket.on('setteamlist', function (data) { table = data; setdropdown(); });
     socket.on('scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "Score: " + table[table.findindexbyabbr(team)].score; });
@@ -61,10 +76,10 @@
     </div>
   </div>
   <div id="round-info">
-    <h1>Semifinal round</h1>
+    <h1></h1>
   </div>
   <div id="question-info">
-    <p></p>
+    <p id ="question-info-text"></p>
   </div>
 
   <div class="teambar">
