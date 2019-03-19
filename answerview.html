@@ -28,6 +28,7 @@
         socket.on('setquestion', function (data) {
         question = data;
     });
+        socket.on('setquestionlist', function(data){questions = data; init();});
 
     </script>
 </head>
@@ -49,6 +50,7 @@
                         <select id="roundselection" onchange="selectround()">
                             <option value="semifinal">semifinal</option>
                             <option value="resuscitation">resuscitation</option>
+                            <option value="sudden death">sudden death</option>
                             <option value="the fast">final:the fast</option>
                             <option value="the leader">final:the leader</option>
                             <option value="the error detector">final:the error detector</option>
@@ -87,12 +89,15 @@
                         <select id="questionselection" onchange="selectquestion()">
                         </select>
                         <p id="questiontext"></p>
-                        <input type="number" class="form-control" id="questionscore" placeholder="Score">
-                        <input type="number" class="form-control" id="questiontime" placeholder="Time">
+                        <p id ="questionscore"></p>
+                        <p id ="questiontime"></p>
+                        <p></p>
                         <div>
                             <button class="btn btn-primary" onclick="submitquestion()" id="questionsubmit">submit</button>
                             <button class="btn btn-secondary" onclick="openquestion()" id="openquestion">showquestion</button>
                             <button class="btn btn-success" id="toggletimer" onclick="timerOn()">start timer</button>
+                            <button class="btn btn-info" onclick="screenshot()">screenshot</button>
+                            <button class="btn btn-info" onclick="resetcanvas()">reset screens</button>
                         </div>
 
                     </div>
@@ -121,7 +126,7 @@
         <div class="flex-item" id="team1">
             <img id="team1img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team1panel">
-                <p class="teamlabel" id="team1label">team1</p>
+                <p class="teamlabel" id="team1label"></p>
                 <div>
                     <button class="btn btn-success correct" onclick="correct(1)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(1)">Wrong</button>

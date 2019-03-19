@@ -1,4 +1,3 @@
-
 const express = require("express");
 const path = require("path");
 const app = express();
@@ -31,16 +30,23 @@ router.get('/stage', function (req, res) {
 app.use('/', router);
 
 if (process.env.NODE_ENV === 'production') {
-	app.use(express.static('client/build'));
+  app.use(express.static('client/build'));
 }
 app.get('*', (request, response) => {
-	response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
 
 var io = require('socket.io')(http);
 var table = []; //abbr,name,country,score
 var questions = []; //section,question,score,time
-var question = { section: "4th ICEM KKU", question: "", score: "", time: 0 };
+var semifinalquestion = [];
+var resuscitationquestion = [];
+var suddendeathquestion = [];
+var finalfastquestion = [];
+var finalleaderquestion = [];
+var finalerrorquestion = [];
+var question = {};
+var currentquestionnumber = 0;
 var Round = []; //name,rule
 var CurrentRound;
 
@@ -132,19 +138,95 @@ function readsheet(auth) {
   //set up questions
   sheets.spreadsheets.values.get({
     spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
-    range: 'QuestionList!A2:G',
+    range: 'Semifinal!A2:G',
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
     if (rows.length) {
       rows.map((row) => {
-        questions.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5], level: row[6] });
+        semifinalquestion.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5], level: row[6] });
       });
-   
+
     } else {
       console.log('No data found.');
     }
   });
+  sheets.spreadsheets.values.get({
+    spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
+    range: 'Resusitation!A2:G',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values;
+    if (rows.length) {
+      rows.map((row) => {
+        resuscitationquestion.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5], level: row[6] });
+      });
+
+    } else {
+      console.log('No data found.');
+    }
+  });
+  sheets.spreadsheets.values.get({
+    spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
+    range: 'Sudden Death!A2:C',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values;
+    if (rows.length) {
+      rows.map((row) => {
+        suddendeathquestion.push({ section: row[0], question: row[1], answer: row[2] });
+      });
+
+    } else {
+      console.log('No data found.');
+    }
+  });
+  sheets.spreadsheets.values.get({
+    spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
+    range: 'Final:the fast!A2:F',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values;
+    if (rows.length) {
+      rows.map((row) => {
+        finalfastquestion.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5] });
+      });
+
+    } else {
+      console.log('No data found.');
+    }
+  });
+  sheets.spreadsheets.values.get({
+    spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
+    range: 'Final:the leader!A2:G',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values;
+    if (rows.length) {
+      rows.map((row) => {
+        finalleaderquestion.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5], level: row[6] });
+      });
+
+    } else {
+      console.log('No data found.');
+    }
+  });
+  sheets.spreadsheets.values.get({
+    spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
+    range: 'Final:the error detector!A2:G',
+  }, (err, res) => {
+    if (err) return console.log('The API returned an error: ' + err);
+    const rows = res.data.values;
+    if (rows.length) {
+      rows.map((row) => {
+        finalerrorquestion.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5], level: row[6] });
+      });
+
+    } else {
+      console.log('No data found.');
+    }
+  });
+
   //set up round infomation
   sheets.spreadsheets.values.get({
     spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
@@ -177,15 +259,15 @@ var count = function () {
       io.sockets.emit('tick', Math.floor(time / 60) + "." + (time % 60).pad(2));
     }
     else {
-      //console.log("time's up");
       timerOn = false;
     }
   }
 }
 
+
 setInterval(count, 1000);
 
-
+questions = semifinalquestion;
 
 
 //Socket
@@ -193,12 +275,18 @@ setInterval(count, 1000);
 io.on('connection', function (socket) {
 
   console.log("client is connected");
+
+
   //init
+
   socket.emit('init', { table: table, questions: questions });
   socket.emit('setteamlist', table);
   //io.sockets.emit('setquestion', question);
-  io.sockets.emit('setround',Round);
+  io.sockets.emit('setround', Round);
+
+
   //reset
+
   socket.on('reload', function () {
     reload();
     io.sockets.emit('init', { table: table, questions: questions });
@@ -210,16 +298,40 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('reset', true);
     socket.emit('reset', true);
   }
-
   );
   socket.on('resetcanvas', function () { socket.broadcast.emit('clearcanvas', true); io.sockets.emit('clearcanvas', true); });
+
+
+  //timer
+
+  socket.on('settime', function (data) { time = data; });
+  socket.on('timerOn', function (data) { timerOn = data; });
+  
+
   //round
+
   socket.on('roundstart', function (data) {
     CurrentRound = data;
+    roundsetup(CurrentRound);
     io.sockets.emit('round', data);
+    io.sockets.emit('setquestionlist', questions);
   });
-  socket.on('openquestion',function(data){io.sockets.emit('openquestion',data)});
+  socket.on('openquestion', function (data) { io.sockets.emit('openquestion', data) });
+
+
+  //question
+
+  socket.on('questionshow', function (data) {
+    timerOn = false;
+    question = data;
+    io.sockets.emit('setquestion', data);
+    //time = (question.time*60);
+    time = (question.time);
+  });
+
+
   //team
+
   socket.on('deleteteam', function (data) {
     var index = table.name.indexOf(data.name);
     console.log(table.name);
@@ -243,7 +355,9 @@ io.on('connection', function (socket) {
   });
   socket.on('screenshot', function (data) { io.sockets.emit('screenshot', true); });
 
+
   //score
+
   socket.on('setscore', function (data) {
     var index = table.findindexbyabbr(data.name);
     var sum = parseInt(table[index].score) + data.score;
@@ -256,17 +370,11 @@ io.on('connection', function (socket) {
     console.log(" ");
     console.log(table);
     var newposition = table.findindexbyabbr(data.name);
-
-
-
     console.log(data.score + " score was added to " + data.name);
     console.log("positionchage from: " + previousposition + " to " + newposition);
     io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
     io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
-
-
   });
-
 
 
   //stage
@@ -282,15 +390,6 @@ io.on('connection', function (socket) {
   socket.on('ForceLEDOff', function (data) { socket.broadcast.emit('forceTurnOffLedStrip', data); console.log(data); });
 
 
-  //question
-  socket.on('questionshow', function (data) {
-    timerOn = false;
-    question = data;
-    io.sockets.emit('setquestion', data);
-    //time = (question.time*60);
-    time = (question.time);
-  });
-  socket.on('timerOn', function (data) { timerOn = data; });
 });
 
 function reload() {
@@ -301,6 +400,35 @@ function reload() {
     // Authorize a client with credentials, then call the Google Sheets API.
     authorize(JSON.parse(content), readsheet);
   });
+
+}
+
+function roundsetup(round) {
+  switch (round) {
+    case "semifinal":
+      questions = semifinalquestion;
+      break;
+    case "resuscitation":
+      questions = resuscitationquestion;
+      break;
+    case "sudden death":
+      question = suddendeathquestion;
+      break;
+    case "final:the fast":
+      question = finalfastquestion;
+      break;
+    case "final:the leader":
+      question = finalleaderquestion;
+      break;
+    case "final:the error detector":
+      question = finalerrorquestion;
+      break;
+
+  }
+  currentquestionnumber = 0;
+  
+
+
 
 }
 Number.prototype.pad = function (size) {
