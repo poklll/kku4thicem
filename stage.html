@@ -54,10 +54,12 @@
     socket.on('scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "Score: " + table[table.findindexbyabbr(team)].score; });
     socket.on('round', function (data) { roundstart(data); });
     socket.on('openquestion', function (data) { openquestion(); });
+    socket.on('correct',function(data){if(data == team){document.getElementById("body").style.backgroundColor = "green";}});
+    socket.on('wrong',function(data){if(data == team){document.getElementById("body").style.backgroundColor = "crimson";}});
   </script>
 </head>
 
-<body>
+<body id = "body">
   <div id="teamselectionmenu">
     <div id="pageturner" class="carousel slide" data-interval="false">
       <div class="carousel-inner">

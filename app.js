@@ -124,7 +124,7 @@ function readsheet(auth) {
     if (rows.length) {
       //console.log('Question : Section,Question,Score,Time:');
       rows.map((row) => {
-        table.push({ abbr: row[0], name: row[1], country: row[2], score: row[3] });
+        table.push({ abbr: row[0], name: row[1], country: row[2], score: row[3], positivefactor: 1, negativefactor: 1 });
         // console.log(`${row[0]} , ${row[1]} , ${row[2]} , ${row[3]}`);
 
       });
@@ -174,7 +174,7 @@ function readsheet(auth) {
     const rows = res.data.values;
     if (rows.length) {
       rows.map((row) => {
-        suddendeathquestion.push({ section: row[0], question: row[1], answer: row[2],time: row[3] });
+        suddendeathquestion.push({ section: row[0], question: row[1], answer: row[2], time: row[3] });
       });
 
     } else {
@@ -292,7 +292,7 @@ io.on('connection', function (socket) {
     io.sockets.emit('init', { table: table, questions: questions });
     io.sockets.emit('setteamlist', table);
   });
-  socket.on('reset', function (data) {
+  socket.on('reset', function () {
     console.log("cleared");
     table = [];
     socket.broadcast.emit('reset', true);
@@ -306,7 +306,7 @@ io.on('connection', function (socket) {
 
   socket.on('settime', function (data) { time = data; });
   socket.on('timerOn', function (data) { timerOn = data; });
-  
+
 
   //round
 
@@ -334,28 +334,18 @@ io.on('connection', function (socket) {
   //team
 
   socket.on('deleteteam', function (data) {
-    var index = table.name.indexOf(data.name);
-    console.log(table.name);
-    console.log(index);
-    table.name.splice(index, 1);
-    table.score.splice(index, 1);
-    console.log(table.name);
-    socket.broadcast.emit('delete', { dataindex: index, datatable: table });
-    socket.emit('delete', { dataindex: index, datatable: table });
+    table.splice(table.findindexbyabbr(data), 1);
+    socket.emit('init', { table: table, questions: questions });
+
   });
-  socket.on('addteam', function (data) {
-    table.name.push(data.name);
-    table.score.push(data.score);
-    console.log(table.name[table.name.length - 1] + table.score[table.score.length - 1]);
-    socket.broadcast.emit('addrow', { rank: table.name.length, name: data.name, score: data.score, });
-    socket.emit('addrow', { rank: table.name.length, name: data.name, score: data.score });
-  });
+
   socket.on('screensubmit', function (data) {
     socket.broadcast.emit('addimage', data);
     socket.emit('addimage', data);
   });
-  socket.on('screenshot', function (data) { io.sockets.emit('screenshot', true); });
-
+  socket.on('screenshot', function () { io.sockets.emit('screenshot', true); });
+  socket.on('correct',function(data){io.sockets.emit('correct',data)});
+  socket.on('wrong',function(data){io.sockets.emit('wrong',data)});
 
   //score
 
@@ -426,7 +416,7 @@ function roundsetup(round) {
       break;
 
   }
- // console.log(questions);
+  // console.log(questions);
   currentquestionnumber = 0;
 
 

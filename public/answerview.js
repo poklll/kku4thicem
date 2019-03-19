@@ -165,6 +165,7 @@ function correct(teamnumber)
       var name = document.getElementById("team"+teamnumber+"label").innerHTML;
       var score = parseInt(question.score);
       setscore(name,score);
+      socket.emit('correct',name);
    
 }
 
@@ -174,6 +175,7 @@ function wrong(teamnumber)
     var name = document.getElementById("team"+teamnumber+"label").innerHTML;
     var score = 0-parseInt(question.score);
     setscore(name,score);
+    socket.emit('correct',name);
 }
 function screenshot()
 {
