@@ -115,6 +115,7 @@ function timerOn()
 function setdropdown()
 {
     var select = document.getElementById("teamselection");
+    select.innerHTML = "";
     var i;
     for(i = 0; i < table.length; i++) {
     var opt = table[i].abbr;
@@ -128,7 +129,8 @@ function setdropdown()
 
 function setqeustionlist()
 {
-     var select = document.getElementById("questionselection");
+    var select = document.getElementById("questionselection");
+    select.innerHTML = "";
     var i;
     for(i = 0; i < questions.length; i++) {
     var opt = questions[i].section;
