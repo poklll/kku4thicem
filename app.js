@@ -327,6 +327,6 @@ Array.prototype.sortBy = function (p) {
 }
 
 
-var server = http.listen(3000, () => {
+var server = http.listen((process.env.PORT || 5000), () => {
   console.log('server is running on port', server.address().port);
 });
