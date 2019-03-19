@@ -1,0 +1,221 @@
+/*layers*/
+.layer1
+{
+   z-index: 1;
+   display:flex;
+flex-direction: column;
+    
+    
+}
+.layer2
+{   position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color:floralwhite;
+    opacity: 0;
+    z-index: 2;
+    visibility: hidden;
+    
+}
+body::-webkit-scrollbar { 
+    display: none; 
+}
+body
+{
+
+}
+
+/*header*/
+#logo
+{
+   width: 15vw;
+   height: 10vh;
+   margin-top: 2vh;
+   
+}
+h1
+{  
+    font-family: impact;
+    font-size: 8vh;
+    color:white;
+    -webkit-text-stroke-width: 1px;
+   -webkit-text-stroke-color: black;
+    
+}
+.header
+{
+    display: flex;
+    width: 100vw;
+    height: 25vh;
+    margin: 0px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color:firebrick;
+}
+
+.option
+{
+ display: flex;
+justify-content: center;
+    align-content: center;
+    height: 5vh;
+    background-color: antiquewhite;
+}
+/* table*/
+.scoreview
+{  
+    background-color:salmon;
+    display: flex;
+    justify-content: center;
+    height: 75vh;
+
+}
+table
+{
+       border-collapse: separate;
+    border-spacing: 0 0.4em;
+}
+
+th
+{
+    vertical-align: middle;
+}
+#scoretable
+{ 
+   width: 80vw;
+ 
+}
+.table thead th
+{        
+         background-color:coral;
+         vertical-align: middle;
+         border: 0px;
+          box-shadow: 0 0 0 3px black;
+}
+table th:first-child{
+  border-radius:10px 0 0 10px;
+}
+
+table th:last-child{
+  border-radius:0 10px 10px 0;
+}
+.table thead tr
+{
+
+}
+
+.table tbody tr
+{
+ 
+    box-shadow: 0 0 0 2px black;
+    border-radius: 8px;
+
+   
+       transition: height 2s;
+  -webkit-transition: height 2s;
+
+}
+
+.table tbody tr:hover
+{
+   
+    
+}
+.table tbody td
+{   
+   vertical-align: middle;
+    
+}
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #92a8d1;
+  color: white;
+}
+
+.table-hover thead th,td
+{   font-size: 2vh;
+    text-align: center;
+    
+}
+.rank
+{  
+    font-size: 6vh;
+    text-align:center;
+
+    background-color: floralwhite;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.score
+{
+    font-size: 3vh;
+    color:black;
+    background-color: bisque;
+     text-align:center;
+    box-shadow: 1px 0 0 0  black;
+    border-radius: 0px 8px 8px 0px;
+}
+.name
+{   font-size: 3vh;
+ 
+    background-color: white;
+    align-items: center;
+    border-radius: 0px;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+}
+/*input*/
+.inputsection
+{
+  
+    height: 30vh;
+    width: 100vw;
+    background-color:brown;
+}
+.inputfield
+{
+    display: flex;
+    justify-content: center;
+    align-items:baseline;
+    
+}
+p
+{   vertical-align: middle;
+    font-family: courier;
+    font-size: 25px;
+    color: white;
+    text-align: center;
+}
+#addname,#addscore
+{   border-radius: 10px;
+    text-align: center;
+    margin-left: 3vh;
+    margin-right: 3vh;
+}
+.btn.btn-danger
+{
+   border-radius: 5px;
+
+  
+}
+/* animation */
+.king
+{
+   height: 40vh;
+}
+
+.flip-horizontal-top {
+	-webkit-animation: flip-horizontal-top 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+	        animation: flip-horizontal-top 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+}
+
+@-webkit-keyframes flip-horizontal-top {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(-360deg);
+            transform: rotateX(-360deg);
+  }
+}

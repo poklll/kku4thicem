@@ -1,0 +1,350 @@
+body
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+#edit
+{
+    font-family: Impact;
+    position:fixed;
+      align-self:flex-start;
+      margin-top: 90vh;
+      width: 20vw;
+     
+       margin-left: 0;
+    z-index: 2;
+  
+    
+ 
+}
+#pageturner
+{
+ position:fixed;
+    width: 50vw;
+    height: 70vh;
+    background-color:beige;
+       align-self:flex-start;
+    margin-top: 20vh;
+    opacity: 0.9;
+    z-index: 2;
+    font-size: 30px;
+    border-radius: 10px;
+     box-shadow: 0 0 3px black;
+  font-family:Impact;
+}
+.form-control
+{    height: 5vh;
+      width: 20vw;
+    text-align: center;
+}
+.form-group
+{    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   vertical-align: middle;
+}
+.carousel-item.active
+{
+   
+       display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+ 
+}
+
+.carousel-item
+{
+
+}
+#questiontext
+{
+    font-size: 10px;
+}
+.scoreedit
+{
+    
+}
+
+
+@media screen and (max-width: 420px) {
+  .buttonpanel
+{
+        display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+}
+}
+select
+{
+    width: 20vh;
+    font-size: 5vh;
+    text-align: center;
+    margin-bottom: 3vh;
+}
+option
+{
+    font-size: 3vh;
+}
+button
+{
+  height: 5vh;
+  width: 20vh; 
+  font-size: 1px;
+}
+
+/* table*/
+.scoreview
+{  
+    background-color:salmon;
+    display:flex;
+    justify-content: center;
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+
+}
+table
+{
+       border-collapse: separate;
+    border-spacing: 0 0.4em;
+}
+
+th
+{
+    vertical-align: middle;
+}
+#scoretable
+{ 
+   width:80vw;
+   height: auto;
+}
+@media screen and (max-width: 420px)
+{
+  #scoretable
+{ 
+   width: 50vw;
+   height: auto;
+}
+}
+.table thead th
+{        
+         background-color:coral;
+         vertical-align: middle;
+         border: 0px;
+          box-shadow: 0 0 0 3px black;
+}
+table th:first-child{
+  border-radius:10px 0 0 10px;
+}
+
+table th:last-child{
+  border-radius:0 10px 10px 0;
+}
+.table thead tr
+{
+
+}
+
+.table tbody tr
+{
+ 
+    box-shadow: 0 0 0 2px black;
+    border-radius: 8px;
+
+   
+ 
+
+}
+
+.table tbody tr:hover
+{
+   
+    
+}
+.table tbody td
+{   
+   vertical-align: middle;
+    margin: 0;
+    
+}
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #92a8d1;
+  color: white;
+}
+
+.table-hover thead th,td
+{   font-size:3vh;
+    text-align: center;
+    
+}
+.teamrank
+{  
+    font-size: 3vh;
+    text-align:center;
+
+    background-color: floralwhite;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.teamscore
+{
+    font-size: 3vh;
+    color:black;
+    background-color: bisque;
+     text-align:center;
+    box-shadow: 1px 0 0 0  black;
+    border-radius: 0px 8px 8px 0px;
+}
+.teamname
+{   
+    
+    display: flex;
+    justify-content:space-between;
+    background-color: white;
+    align-items: center;
+    border-radius: 0px;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+
+}
+.teamnametext
+{
+    font-size: 3vh;
+}
+.logoimg
+{
+    width: 50px;
+    height: 50px;
+}
+.flagimg
+{
+    width: 80px;
+    height: 50px;
+    border: 2px solid black;
+}
+/* animation */
+.king
+{
+   height: 40vh;
+}
+
+.flip-horizontal-top {
+	-webkit-animation: flip-horizontal-top 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+	        animation: flip-horizontal-top 1s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+}
+.swing-in-top-fwd {
+	-webkit-animation: swing-in-top-fwd 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
+	        animation: swing-in-top-fwd 0.5s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
+}
+.flip-in-hor-bottom {
+	-webkit-animation: flip-in-hor-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+	        animation: flip-in-hor-bottom 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+.color-change-2x {
+	-webkit-animation: color-change-2x 0.5s linear 3 alternate both;
+	        animation: color-change-2x 0.5s linear 3 alternate both;
+}
+
+ */
+@-webkit-keyframes color-change-2x {
+  0% {
+    background: #FFFFFF;
+  }
+  100% {
+    background: #FF6F6A;
+  }
+}
+@keyframes color-change-2x {
+  0% {
+    background: #FFFFFF;
+  }
+  100% {
+    background: #FF6F6A;
+  }
+}
+
+@-webkit-keyframes flip-in-hor-bottom {
+  0% {
+    -webkit-transform: rotateX(80deg);
+            transform: rotateX(80deg);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+    opacity: 1;
+  }
+}
+@keyframes flip-in-hor-bottom {
+  0% {
+    -webkit-transform: rotateX(80deg);
+            transform: rotateX(80deg);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+    opacity: 1;
+  }
+}
+
+
+@-webkit-keyframes flip-horizontal-top {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(-360deg);
+            transform: rotateX(-360deg);
+  }
+}
+/* ----------------------------------------------
+ * Generated by Animista on 2019-3-6 15:12:20
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation swing-in-top-fwd
+ * ----------------------------------------
+ */
+@-webkit-keyframes swing-in-top-fwd {
+  0% {
+    -webkit-transform: rotateX(-100deg);
+            transform: rotateX(-100deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 1;
+  }
+}
+@keyframes swing-in-top-fwd {
+  0% {
+    -webkit-transform: rotateX(-100deg);
+            transform: rotateX(-100deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 1;
+  }
+}
+

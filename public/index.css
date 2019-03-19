@@ -1,0 +1,29 @@
+body
+{
+    background-color:coral;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 150vh;
+}
+
+img
+{
+    height: 20vh;
+    width: 20vh;
+    opacity: 1;
+    transition: opacity 2s;
+}
+
+img:hover
+{
+
+   opacity: 0.5;
+}
+
+p
+{
+    font-family: Impact;
+    text-align: center;
+}

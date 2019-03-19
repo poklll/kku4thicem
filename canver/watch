@@ -1,0 +1,1 @@
+coffee --watch --compile -b scripts/*.coffee scripts/objects/*.coffee spec/javascripts/*.coffee

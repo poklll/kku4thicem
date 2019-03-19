@@ -1,0 +1,374 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100vh;
+  height: 100vw;
+  font-family: Helvetica;
+}
+
+canvas {
+  display: none;
+}
+
+#backgroundSetup {
+  overflow: hidden;
+  box-sizing: border-box;
+  top: 0;
+  height: 100%;
+  text-align: center;
+}
+
+.bgSelect {
+  display: inline-block;
+  float: left;
+  width: 33%;
+  min-height: 100%;
+}
+
+#setBgBlack {
+  background-color: black;
+}
+
+#setBgWhite {
+  background-color: white;
+}
+
+#setBgGrey {
+  background-color: #333;
+  float: right;
+}
+
+/* Image for saving */
+
+#saveImage {
+  z-index: 3;
+}
+
+/* Menu stuff */
+
+#start {
+  font-size: 1.6em;
+  display: none;
+  background-color: black;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 5%;
+  height: 50px;
+  z-index: 2;
+  border-top: 1px solid #555;
+  padding: 5px;
+  text-align: center;
+  -webkit-transition: all 0.4s ease;
+  color: whitesmoke;
+}
+
+#start.up {
+  height: 35px;
+  border-right: 1px solid #555;
+  border-top-right-radius: 10px;
+}
+
+#start:before {
+  content: '▲';
+}
+
+#start.down:before {
+  content: '▼';
+}
+
+#menu {
+  font-size: 2.4em;
+  color: #aaa;
+  text-align: center;
+  position: fixed;
+  margin: 0 2% 0 5%;
+  bottom: 0;
+  height: 50px;
+  z-index: 2;
+  border-top-right-radius: 10px;
+  border: 1px solid #555;
+  border-bottom: none;
+  width: 93%;
+  background-color: whitesmoke;
+  box-sizing: border-box;
+  padding: 0 10px;
+  -webkit-transition: all 0.4s ease;
+  -webkit-transform: scaleX(1);
+}
+
+#menu.hidden {
+  -webkit-transform: scaleX(0);
+  bottom: -50px;
+}
+
+#menu .active {
+  color: #fff;
+}
+
+.tool {
+  border-radius: 0px;
+  width: 50px;
+  height: 100px;
+  margin: 20px 5px;
+  float: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tool.active {
+  background-color: cornflowerblue;
+}
+
+img {
+  width: 50px;
+  height: 50px;
+}
+
+.color, .size {
+  border-radius: 15px;
+  width: 30px;
+  height: 30px;
+  margin: 10px 5px;
+  float: left;
+  box-shadow: inset 1px 1px 2px #777;
+}
+
+.color.active {
+  border: 10px solid #99A3A4;
+  box-shadow: none;
+}
+
+#rainbow {
+  background: -moz-linear-gradient(top, #ff0000 0%, #2b32ff 100%);
+  background: -webkit-linear-gradient(top, #ff0000 0%, #2b32ff 100%);
+  background: linear-gradient(top, #ff0000 0%, #2b32ff 100%);
+}
+
+.size {
+  background-color: #aaa;
+}
+
+.size.active {
+  background-color: #fff;
+}
+
+#smallSize {
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
+}
+
+#mediumSize {
+  height: 26px;
+  width: 26px;
+  border-radius: 13px;
+}
+
+#bigSize {
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
+}
+
+#reset, #saving {
+  float: right;
+  color: white;
+  font-weight: 900;
+  margin-left: 10px;
+}
+
+.separator {
+  height: 100%;
+  border-left: 1px solid #555;
+  float: left;
+  margin: 0 10px;
+}
+
+button {
+  color: white;
+  width: 500px;
+  height: 100px;
+  font-size: 50px;
+  text-align: center;
+  vertical-align: middle;
+  background-color: deepskyblue;
+  float: right;
+}
+
+/* Animations */
+
+@-webkit-keyframes spindown {
+  from {
+    -webkit-transform: rotate(0deg) translateX(0%);
+    margin-left: 5%;
+  }
+  to {
+    -webkit-transform: rotate(90deg) translateX(52%);
+    margin-left: -50%;
+  }
+}
+
+/* retina and ipad */
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) and (min-width: 768px) {
+  body {
+    font-size: 32px;
+  }
+  #start, #menu {
+    height: 100px;
+  }
+  #start.up {
+    height: 70px;
+  }
+  .color, .size, .tool {
+    width: 60px;
+    height: 60px;
+  }
+  .color, .size {
+    margin: 20px 10px;
+  }
+  #smallSize {
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+  }
+  #mediumSize {
+    height: 52px;
+    width: 52px;
+    border-radius: 26px;
+  }
+  #bigSize {
+    height: 72px;
+    width: 72px;
+    border-radius: 36px;
+  }
+}
+
+/* Unsupported page */
+
+#sorry {
+  text-align: center;
+  padding-top: 20%;
+}
+
+#edit {
+  font-family: Impact;
+  position: fixed;
+  align-self: flex-start;
+  margin-top: 90vh;
+  width: 10vw;
+  margin-left: 0;
+  z-index: 2;
+}
+
+#pageturner {
+  position: fixed;
+  width: 50vw;
+  height: 50vh;
+  background-color: beige;
+  align-self: center;
+  margin-top: 20vh;
+  opacity: 0.9;
+  z-index: 2;
+  font-size: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 3px black;
+  font-family: Impact;
+}
+
+.form-control {
+  width: 30vw;
+  text-align: center;
+}
+
+.form-group {
+  margin-top: 10vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.carousel-item.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scoreedit {}
+
+.teamheader {
+  position: fixed;
+  background-color: beige;
+  height: 10vh;
+  width: 20vw;
+  z-index: 3;
+}
+
+#name {
+  font-family: Impact;
+  color: black;
+  font-size: 40px;
+  text-align: center;
+}
+
+select {
+  width: 30vw;
+  margin-bottom: 10vh;
+}
+
+#teamselectionmenu {
+  position: fixed;
+  width: 100vw;
+  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 50vw;
+  margin-top:30vh;
+}
+
+.btn {
+  margin-top: 5vh;
+  width: 10vw;
+  height: 10vh;
+}
+
+input {
+  width: 30vw;
+}
+
+#helper {
+  position: fixed;
+  margin-left: 0vw;
+  margin-top: 10vh;
+}
+
+p {
+  margin: 0;
+}
+
+#x2, #x3 {
+  height: 10vh;
+  width: 10vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  color: white;
+}
+
+#x2 {
+  background-color: lightpink;
+}
+
+#x3 {
+  background-color: greenyellow;
+}

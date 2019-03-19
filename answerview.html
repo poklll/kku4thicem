@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>4th ICEM</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src="public/html2canvas.min.js"></script>
+    <script src="public/answerview.js"></script>
+    <link rel="stylesheet" type="text/css" href="public/answerview.css">
+    <link rel="stylesheet" href="public/animate.css">
+    <script>
+        var socket = io();
+        socket.on('addimage', function (data) { addimage(data); });
+        socket.on('init', function (data) { table = data.table; questions = data.questions; init(); });
+        socket.on('setquestion', function (data) {
+        question = data;
+    });
+
+    </script>
+</head>
+
+<body>
+
+    <div id="fullscreen">
+        <img id="selected">
+        <img id="cancel" src="asset/cancel.png" onclick="cancel()">
+    </div>
+
+    <button class="btn btn-success" onclick="edit()" id="edit">Edit</button>
+    <div id="pageturner" class="carousel slide" data-interval="false">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="Round selection">
+                    <div class="form-group">
+                        <p>Round selection</p>
+                        <select id="roundselection" onchange="selectround()">
+                            <option value="semifinal">semifinal</option>
+                            <option value="resuscitation">resuscitation</option>
+                            <option value="the fast">final:the fast</option>
+                            <option value="the leader">final:the leader</option>
+                            <option value="the error detector">final:the error detector</option>
+                        </select>
+                        <div>
+                            <button class="btn btn-primary" onclick="selectround()" id="roundsubmit">Select</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="carousel-item">
+                <div class="scoreedit">
+                    <div class="form-group">
+                        <p>Score</p>
+                        <select id="teamselection">
+
+                        </select>
+                        <input type="number" class="form-control" id="scoresubmit" placeholder="Score">
+                        <div>
+                            <button class="btn btn-primary" onclick="addscore()">+</button>
+                            <button class="btn btn-danger" onclick="reducescore()">-</button>
+                            <button class="btn btn-info" onclick="screenshot()">screenshot</button>
+                            <button class="btn btn-info" onclick="resetcanvas()">reset screens</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="question">
+                    <div class="form-group">
+                        <p>Question</p>
+                        <select id="questionselection" onchange="selectquestion()">
+                        </select>
+                        <p id="questiontext"></p>
+                        <input type="number" class="form-control" id="questionscore" placeholder="Score">
+                        <input type="number" class="form-control" id="questiontime" placeholder="Time">
+                        <div>
+                            <button class="btn btn-primary" onclick="submitquestion()" id="questionsubmit">submit</button>
+                            <button class="btn btn-secondary" onclick="openquestion()" id="openquestion">showquestion</button>
+                            <button class="btn btn-success" id="toggletimer" onclick="timerOn()">start timer</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="clear"></div>
+
+        </div>
+
+        <a class="carousel-control-prev" href="#pageturner" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color:chocolate;"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#pageturner" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true" style="background-color:chocolate;"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
+
+    <div class="flex-container">
+        <div class="flex-item" id="team1">
+            <img id="team1img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team1panel">
+                <p class="teamlabel" id="team1label">team1</p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(1)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(1)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team2">
+            <img id="team2img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team2panel">
+                <p class="teamlabel" id="team2label"></p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(2)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(2)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team3">
+            <img id="team3img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team3panel">
+                <p class="teamlabel" id="team3label"></p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(3)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(3)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team4">
+            <img id="team4img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team4panel">
+                <p class="teamlabel" id="team4label"></p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(4)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(4)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team5">
+            <img id="team5img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team5panel">
+                <p class="teamlabel" id="team5label"></p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(5)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(5)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team6">
+            <img id="team6img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team6panel">
+                <p class="teamlabel" id="team6label"></p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(6)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(6)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team7">
+            <img id="team7img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team7panel">
+                <p class="teamlabel" id="team7label"></p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(7)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(7)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team8">
+            <img id="team8img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team8panel">
+                <p class="teamlabel" id="team8label"></p>
+                <div>
+                    <button class="btn btn-success correct" onclick="correct(8)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(8)">Wrong</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

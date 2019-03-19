@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>4th ICEM</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script src='/socket.io/socket.io.js'></script>
+  <script src="public/html2canvas.min.js"></script>
+  <script src="public/stage.js"></script>
+  <link rel="stylesheet" type="text/css" href="public/stage.css">
+  <link rel="stylesheet" href="public/animate.css">
+  <script>
+    var socket = io();
+    var question = {};
+    socket.on('tick', function (data) { document.getElementById("clock").innerHTML = data; });
+    socket.on('setteamlist', function (data) { table = data; setdropdown(); });
+    socket.on('setquestion', function (data) {
+      document.getElementById("round-info").style.visibility = "hidden";
+      document.getElementById("question-info").style.visibility = "visible";
+      document.getElementById("question-info").firstChild.innerHTML = "Level: "+data.level+"<br>"+"Score: "+data.score+"<br>"+"Time: "+data.time; 
+      question = data;
+      document.getElementById("head").innerHTML = data.section;
+      document.getElementById("text").innerHTML = data.question;
+      document.getElementById("clock").innerHTML = Math.floor(data.time / 60) + "." + (data.time % 60).pad(2);
+    });
+    socket.on('setteamlist', function (data) { table = data; setdropdown(); });
+    socket.on('scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "Score: " + table[table.findindexbyabbr(team)].score; });
+    socket.on('round',function(data){roundstart(data);});
+    socket.on('openquestion',function(data){openquestion();});
+  </script>
+</head>
+
+<body>
+  <div id="teamselectionmenu">
+    <div id="pageturner" class="carousel slide" data-interval="false">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div class="scoreedit">
+            <div class="form-group">
+              <p>Select Team</p>
+              <select id="teamselection">
+              </select>
+              <button class="btn btn-success" onclick="select()">Select</button>
+            </div>
+          </div>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+  </div>
+  <div id="round-info">
+    <h1>Semifinal round</h1>
+  </div>
+  <div id="question-info"><p></p></div>
+
+  <div class="teambar">
+    <div class="teamname" id="teamname"></div>
+    <div class="score" id="score"></div>
+  </div>
+
+  <div class="header" id="head"></div>
+  <div class="question" id="text"></div>
+  <div class="timer" id="clock"></div>
+
+</body>
+
+</html>
