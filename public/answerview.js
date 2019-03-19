@@ -71,7 +71,7 @@ function selectquestion()
     var section = select.options[select.selectedIndex].text;
     var index = questions.findindexbysection(section);
     var time = questions[index].time;
-    document.getElementById("questiontext").innerHTML = questions[index].question;
+   // document.getElementById("questiontext").innerHTML = questions[index].question;
     document.getElementById("questionscore").innerHTML = "Score: "+questions[index].score;
     document.getElementById("questiontime").innerHTML = "Time: "+Math.floor(time / 60) + "." + (time % 60).pad(2)+" min";
     question = questions[index];
