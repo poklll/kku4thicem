@@ -3,6 +3,7 @@ var questions= [];
 var edited = true;
 var timer = false;
 var question = {};
+var judge;
 function addimage(data)
 {   var index = table.findindexbyabbr(data.name);
     var nameimg = "team"+(index+1)+"img";
@@ -170,7 +171,8 @@ function correct(teamnumber)
       var score = parseInt(question.score);
       setscore(name,score);
       socket.emit('correct',name);
-   
+      judge--;
+      iscomplete();
 }
 
 function wrong(teamnumber)
@@ -180,11 +182,32 @@ function wrong(teamnumber)
     var score = 0-parseInt(question.score);
     setscore(name,score);
     socket.emit('wrong',name);
+    judge--;
+    iscomplete();
+}
+
+function iscomplete()
+{
+    if(judge == 0)
+    {
+        socket.emit('judgecomplete',true);
+
+    }
 }
 function screenshot()
 {
     socket.emit('screenshot',true);
 }
+function resetpanel()
+{   var i;
+    var teampanel = document.getElementsByClassName("teampanel");
+    for(i=0;i<teampanel.length;i++)
+    {
+        teampanel[i].style.backgroundColor = "cornflowerblue";
+    }
+    socket.emit('screenshot',true);
+}
+
 Array.prototype.findindexbysection = function(name)
 {
   var i;

@@ -341,15 +341,9 @@ io.on('connection', function (socket) {
   socket.on('openanswer', function () {
     io.sockets.emit('openanswer', true);
   });
-
-
-  //question
-
-  socket.on('questionshow', function (data) {
-    resetfactor();
-    timerOn = false;
-    question = data;
-    if(CurrentRound == "semifinal" && (data.section == 2 || data.section == 8))
+  socket.on('judgecomplete', function () {
+    console.log("judge was completed");
+    if(CurrentRound == "semifinal" && (question.section == 4 || question.section == 8))
     {  
        if(table[table.length-1].score == table[table.length-2].score)
        {
@@ -358,6 +352,15 @@ io.on('connection', function (socket) {
         socket.emit('init', { table: table, questions: questions });
        }
     }
+  }
+  )
+
+  //question
+
+  socket.on('questionshow', function (data) {
+    resetfactor();
+    timerOn = false;
+    question = data;
     io.sockets.emit('setquestion', data);
     time = (question.time);
   });
@@ -367,7 +370,7 @@ io.on('connection', function (socket) {
 
   socket.on('deleteteam', function (data) {
     table.splice(table.findindexbyabbr(data), 1);
-    io.sockets.emit('blackout',data);
+    io.sockets.emit('blackout', data);
     socket.emit('init', { table: table, questions: questions });
 
   });
@@ -404,7 +407,7 @@ io.on('connection', function (socket) {
     }
     //resuscitation
     if (CurrentRound == "resuscitation" && sum <= 0) {
-      io.sockets.emit('blackout',data.name);
+      io.sockets.emit('blackout', data.name);
       table.splice(table.findindexbyabbr(data.name), 1);
       io.sockets.emit('init', { table: table, questions: questions });
     }
