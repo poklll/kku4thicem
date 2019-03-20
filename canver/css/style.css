@@ -418,6 +418,7 @@ p {
 
 #blackout
 { z-index: 4;
+  position: fixed;
   height: 100vh;
   width: 100vw;
   background-color: black;
