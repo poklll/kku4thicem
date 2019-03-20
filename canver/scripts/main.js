@@ -78,3 +78,8 @@ function x3() {
   socket.emit('setscorefactor', { type: "x3", name: team, positive: 3, negative: 1 });
   document.getElementById("x3").style.visibility = "hidden";
 }
+
+function blackout()
+{
+  document.getElementById("blackout").style.visibility = "visible";
+}

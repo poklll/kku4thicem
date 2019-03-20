@@ -52,13 +52,7 @@
         document.getElementById("leader-selector").style.visibility = "hidden";
       }
     });
-    socket.on('blackout', function (data) {
-      if(team == data)
-      {
-        document.getElementById("blackout").style.visibility = "visible";
-      }
-     
-    });
+    socket.on('blackout', function (data) { if (team == data) { blackout(); } });
   </script>
 </head>
 
