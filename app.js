@@ -349,7 +349,7 @@ io.on('connection', function (socket) {
     resetfactor();
     timerOn = false;
     question = data;
-    if(currentround == "semifinal" && (data.section == 2 || data.section == 8))
+    if(CurrentRound == "semifinal" && (data.section == 2 || data.section == 8))
     {  
        if(table[table.length-1].score == table[table.length-2].score)
        {
