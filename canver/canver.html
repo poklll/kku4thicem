@@ -36,6 +36,14 @@
     socket.on('screenshot', function () { screenshot(); });
     socket.on('setteamlist', function (data) { table = data; setdropdown(); });
     socket.on('clearcanvas', function () { resetcanvas() });
+    socket.on('showhelper', function (data) {
+      if (data) {
+        document.getElementById("helper").style.visibility = "visible";
+      }
+      else {
+        document.getElementById("helper").style.visibility = "hidden";
+      }
+    });
   </script>
 </head>
 
@@ -43,12 +51,15 @@
   <div class="teamheader">
     <p id="name"></p>
   </div>
-    <div id="helper">
+  <div id="helper">
     <div id="x2">
       <p>X2</p>
     </div>
     <div id="x3">
       <p>X3</p>
+    </div>
+    <div id="leader-selector">
+      
     </div>
   </div>
   <div id="teamselectionmenu">

@@ -349,6 +349,7 @@ input {
   position: fixed;
   margin-left: 0vw;
   margin-top: 10vh;
+  visibility: hidden;
 }
 
 p {
@@ -371,4 +372,15 @@ p {
 
 #x3 {
   background-color: greenyellow;
+}
+
+#leaderselector {
+  position: fixed;
+  width: 100vw;
+  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 50vw;
+  margin-top:30vh;
 }

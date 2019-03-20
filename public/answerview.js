@@ -33,7 +33,7 @@ function submitscore(score,type)
     }
    var select = document.getElementById("teamselection");
    var value = select.options[select.selectedIndex].value;
-    var team = select.options[select.selectedIndex].text;
+   var team = select.options[select.selectedIndex].text;
    socket.emit('setscore',{name:team,score:score});
     
 }
@@ -56,7 +56,7 @@ function resetcanvas()
 function fullscreen(img)
 {
     document.getElementById("selected").src = img;
-     document.getElementById("fullscreen").style.visibility ="visible";
+    document.getElementById("fullscreen").style.visibility ="visible";
 }
 
 function cancel()

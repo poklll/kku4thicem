@@ -312,10 +312,25 @@ io.on('connection', function (socket) {
 
   socket.on('roundstart', function (data) {
     CurrentRound = data;
-    console.log(CurrentRound);
+    console.log("round was set to " + CurrentRound);
     roundsetup(CurrentRound);
     io.sockets.emit('round', data);
     io.sockets.emit('setquestionlist', questions);
+    //show helper
+    if (data == "semifinal") {
+      io.sockets.emit('showhelper', true);
+    }
+    else {
+      io.sockets.emit('showhelper', false);
+    }
+    //show leader selection
+    if (data == "final:the leader") {
+      io.sockets.emit('showleader', true);
+    }
+    else {
+      io.sockets.emit('showleader', false);
+    }
+    //
   });
   socket.on('openquestion', function (data) { io.sockets.emit('openquestion', data) });
 
@@ -344,14 +359,27 @@ io.on('connection', function (socket) {
     socket.emit('addimage', data);
   });
   socket.on('screenshot', function () { io.sockets.emit('screenshot', true); });
-  socket.on('correct',function(data){io.sockets.emit('correct',data)});
-  socket.on('wrong',function(data){io.sockets.emit('wrong',data)});
-
+  socket.on('correct', function (data) { io.sockets.emit('correct', data) });
+  socket.on('wrong', function (data) { io.sockets.emit('wrong', data) });
+  socket.on('setscorefactor', function (data) {
+    if (data.type == "positive") {
+      table[table.findindexbyabbr(data.name)].positivefactor = data.factor;
+    }
+    else {
+      table[table.findindexbyabbr(data.name)].negativefactor = data.factor;
+    }
+  });
   //score
 
   socket.on('setscore', function (data) {
     var index = table.findindexbyabbr(data.name);
-    var sum = parseInt(table[index].score) + data.score;
+    var sum;
+    if (data.score > 0) {
+      sum = parseInt(table[index].score) + (data.score * parseInt(table[index].positivefactor));
+    }
+    else {
+      sum = parseInt(table[index].score) + (data.score * parseInt(table[index].negativefactor));
+    }
     var previousposition = index;
     console.log(table);
     table[index].score = sum;
@@ -418,10 +446,6 @@ function roundsetup(round) {
   }
   // console.log(questions);
   currentquestionnumber = 0;
-
-
-
-
 }
 Number.prototype.pad = function (size) {
   var s = String(this);
@@ -437,7 +461,6 @@ Array.prototype.findindexbyabbr = function (name) {
     //   console.log(this[i].abbr);
     if (this[i].abbr == name) { return i; }
   }
-
 };
 
 Array.prototype.sortBy = function (p) {
