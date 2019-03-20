@@ -374,13 +374,45 @@ p {
   background-color: greenyellow;
 }
 
-#leaderselector {
+#leader-selector {
   position: fixed;
   width: 100vw;
-  height: 50vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-left: 50vw;
   margin-top:30vh;
+  visibility: hidden;
+ 
 }
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100vh;
+  width: 100vw;
+}
+.flex-head
+{
+  flex-basis: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 70px;
+}
+.flex-item {
+  flex-basis: 50%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 50px; 
+  color: white;
+  background-color: crimson;
+  border: 3px solid black;
+}
+

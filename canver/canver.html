@@ -44,6 +44,14 @@
         document.getElementById("helper").style.visibility = "hidden";
       }
     });
+    socket.on('showleader', function (data) {
+      if (data) {
+        document.getElementById("leader-selector").style.visibility = "visible";
+      }
+      else {
+        document.getElementById("leader-selector").style.visibility = "hidden";
+      }
+    });
   </script>
 </head>
 
@@ -58,10 +66,18 @@
     <div id="x3">
       <p>X3</p>
     </div>
-    <div id="leader-selector">
-      
-    </div>
   </div>
+
+  <div id="leader-selector">
+  <div class="flex-container">
+    <div class="flex-head">Select question for your leader!</div>
+    <div class="flex-item" id="leader1-1">1.1 Hard</div>
+    <div class="flex-item" id="leader1-2">1.2 Easy</div>
+    <div class="flex-item" id="leader2-1">2.1 Hard</div>
+    <div class="flex-item" id="leader2-2">2.2 Easy</div>
+  </div>
+  </div>
+
   <div id="teamselectionmenu">
     <div id="pageturner" class="carousel slide" data-interval="false">
       <div class="carousel-inner">

@@ -260,6 +260,7 @@ var count = function () {
     }
     else {
       timerOn = false;
+      io.sockets.emit('screenshot', true);
     }
   }
 }
@@ -380,19 +381,28 @@ io.on('connection', function (socket) {
     else {
       sum = parseInt(table[index].score) + (data.score * parseInt(table[index].negativefactor));
     }
-    var previousposition = index;
-    console.log(table);
-    table[index].score = sum;
-    table.sort(function (a, b) {
-      return b.score - a.score;
-    });
-    console.log(" ");
-    console.log(table);
-    var newposition = table.findindexbyabbr(data.name);
-    console.log(data.score + " score was added to " + data.name);
-    console.log("positionchage from: " + previousposition + " to " + newposition);
-    io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
-    io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
+    //resuscitation
+    if(CurrentRound == "resuscitation" && sum <= 0)
+    {
+      table.splice(table.findindexbyabbr(data.name), 1);
+      io.sockets.emit('init', { table: table, questions: questions });
+    }
+    else
+    {
+      var previousposition = index;
+      console.log(table);
+      table[index].score = sum;
+      table.sort(function (a, b) {
+        return b.score - a.score;
+      });
+      console.log(" ");
+      console.log(table);
+      var newposition = table.findindexbyabbr(data.name);
+      console.log(data.score + " score was added to " + data.name);
+      console.log("positionchage from: " + previousposition + " to " + newposition);
+      io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
+      io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
+    }
   });
 
 
@@ -429,6 +439,10 @@ function roundsetup(round) {
       break;
     case "resuscitation":
       questions = resuscitationquestion;
+      table.map((team) => {
+         team.score = 50;
+      });
+      io.sockets.emit('init', { table: table, questions: questions });
       break;
     case "sudden death":
       questions = suddendeathquestion;
