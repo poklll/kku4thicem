@@ -339,7 +339,7 @@ io.on('connection', function (socket) {
     io.sockets.emit('openquestion', data);
   });
   socket.on('openanswer', function () {
-    io.sockets.emit('openanwer', true);
+    io.sockets.emit('openanswer', true);
   });
 
 
