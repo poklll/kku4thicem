@@ -262,6 +262,7 @@ var count = function () {
     else {
       timerOn = false;
       io.sockets.emit('screenshot', true);
+      io.sockets.emit('clearcanvas', true);
     }
   }
 }
@@ -301,7 +302,7 @@ io.on('connection', function (socket) {
     socket.emit('reset', true);
   }
   );
-  socket.on('resetcanvas', function () { socket.broadcast.emit('clearcanvas', true); io.sockets.emit('clearcanvas', true); });
+  socket.on('resetcanvas', function () { io.sockets.emit('clearcanvas', true); });
 
 
   //timer
@@ -334,7 +335,12 @@ io.on('connection', function (socket) {
     }
     //
   });
-  socket.on('openquestion', function (data) { io.sockets.emit('openquestion', data) });
+  socket.on('openquestion', function (data) {
+    io.sockets.emit('openquestion', data);
+  });
+  socket.on('openanswer', function () {
+    io.sockets.emit('openanwer', true);
+  });
 
 
   //question
@@ -364,11 +370,11 @@ io.on('connection', function (socket) {
   socket.on('correct', function (data) { io.sockets.emit('correct', data) });
   socket.on('wrong', function (data) { io.sockets.emit('wrong', data) });
   socket.on('setscorefactor', function (data) {
-      table[table.findindexbyabbr(data.name)].positivefactor = data.positive;
-      table[table.findindexbyabbr(data.name)].negativefactor = data.negative;
-       console.log(data);
-       console.log(table[table.findindexbyabbr(data.name)]);
-      io.sockets.emit('setscorefactor',data);
+    table[table.findindexbyabbr(data.name)].positivefactor = data.positive;
+    table[table.findindexbyabbr(data.name)].negativefactor = data.negative;
+    console.log(data);
+    console.log(table[table.findindexbyabbr(data.name)]);
+    io.sockets.emit('setscorefactor', data);
   });
 
 
@@ -378,7 +384,7 @@ io.on('connection', function (socket) {
     var index = table.findindexbyabbr(data.name);
     var sum;
     if (data.score > 0) {
-      console.log("positivefactor: "+table[index].positivefactor);
+      console.log("positivefactor: " + table[index].positivefactor);
       sum = parseInt(table[index].score) + (data.score * parseInt(table[index].positivefactor));
       console.log(data.score);
       console.log(sum);
@@ -443,7 +449,7 @@ function roundsetup(round) {
       break;
     case "resuscitation":
       questions = resuscitationquestion;
-       resetscore(50);
+      resetscore(50);
       break;
     case "sudden death":
       questions = suddendeathquestion;
@@ -468,21 +474,19 @@ function roundsetup(round) {
   currentquestionnumber = 0;
 }
 
-function resetscore(score)
-{
+function resetscore(score) {
   table.map((team) => {
     team.score = score;
   });
   io.sockets.emit('init', { table: table, questions: questions });
 }
 
-function resetfactor()
-{
-   table.map((team)=>{
-     team.positivefactor = defaultpositivefactor;
-     team.negativefactor = defaultnegativefactor;
-   });
-   io.sockets.emit('init', { table: table, questions: questions });
+function resetfactor() {
+  table.map((team) => {
+    team.positivefactor = defaultpositivefactor;
+    team.negativefactor = defaultnegativefactor;
+  });
+  io.sockets.emit('init', { table: table, questions: questions });
 }
 Number.prototype.pad = function (size) {
   var s = String(this);

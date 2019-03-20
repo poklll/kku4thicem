@@ -17,7 +17,12 @@ function openquestion()
 {
   document.getElementById("question-info").style.visibility = "hidden";
 }
-
+function openanswer()
+{
+      document.getElementById("head").innerHTML = currentround + " " +data.section+" answer";
+      document.getElementById("text").innerHTML = data.answer;
+      document.getElementById("body").style.backgroundColor = "white";
+}
 function select()
 {
         var select = document.getElementById("teamselection");

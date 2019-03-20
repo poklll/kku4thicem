@@ -80,6 +80,10 @@ function openquestion()
 {
     socket.emit('openquestion',true);
 }
+function openanswer()
+{
+    socket.emit('openanswer',true);
+}
 function selectround()
 {
     var select = document.getElementById("roundselection");
