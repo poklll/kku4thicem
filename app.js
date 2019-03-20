@@ -349,6 +349,15 @@ io.on('connection', function (socket) {
     resetfactor();
     timerOn = false;
     question = data;
+    if(currentround == "semifinal" && (data.section == 2 || data.section == 8))
+    {  
+       if(table[table.length-1].score == table[table.length-2].score)
+       {
+        table.splice(table.length-1,1);
+        io.sockets.emit('blackout',table[table.length-1].name);
+        socket.emit('init', { table: table, questions: questions });
+       }
+    }
     io.sockets.emit('setquestion', data);
     time = (question.time);
   });
@@ -358,6 +367,7 @@ io.on('connection', function (socket) {
 
   socket.on('deleteteam', function (data) {
     table.splice(table.findindexbyabbr(data), 1);
+    io.sockets.emit('blackout',data);
     socket.emit('init', { table: table, questions: questions });
 
   });
@@ -394,6 +404,7 @@ io.on('connection', function (socket) {
     }
     //resuscitation
     if (CurrentRound == "resuscitation" && sum <= 0) {
+      io.sockets.emit('blackout',data.name);
       table.splice(table.findindexbyabbr(data.name), 1);
       io.sockets.emit('init', { table: table, questions: questions });
     }

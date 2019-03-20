@@ -48,6 +48,10 @@ function setdropdown()
   }
 }
 
+function blackout()
+{
+  document.getElementById("blackout").style.visibility = "visible";
+}
 Array.prototype.findindexbyabbr = function(name)
 {
   var i;

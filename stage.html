@@ -30,23 +30,20 @@
       document.getElementById("round-info").style.visibility = "hidden";
       document.getElementById("question-info").style.visibility = "visible";
       var questioninfo;
-      if(data.level == undefined && data.score == undefined )
-      {
-        questioninfo = "Time: " + tomin(data.time)+" min";    
+      if (data.level == undefined && data.score == undefined) {
+        questioninfo = "Time: " + tomin(data.time) + " min";
       }
       else
-      if(data.level == undefined)
-      {
-        questioninfo = "Score: " + data.score + "<br>" + "Time: " + tomin(data.time)+" min";
-      }
-      else
-      {
-        questioninfo = "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time)+" min";
+        if (data.level == undefined) {
+          questioninfo = "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
+        }
+        else {
+          questioninfo = "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
 
-      }
+        }
       document.getElementById("question-info-text").innerHTML = questioninfo;
       question = data;
-      document.getElementById("head").innerHTML = currentround + " " +data.section;
+      document.getElementById("head").innerHTML = currentround + " " + data.section;
       document.getElementById("text").innerHTML = data.question;
       document.getElementById("clock").innerHTML = tomin(data.time);
     });
@@ -55,12 +52,14 @@
     socket.on('round', function (data) { roundstart(data); });
     socket.on('openquestion', function (data) { openquestion(); });
     socket.on('openanswer', function (data) { openanswer(); });
-    socket.on('correct',function(data){if(data == team){document.getElementById("body").style.backgroundColor = "green";}});
-    socket.on('wrong',function(data){if(data == team){document.getElementById("body").style.backgroundColor = "crimson";}});
+    socket.on('correct', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "green"; } });
+    socket.on('wrong', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "crimson"; } });
+    socket.on('blackout', function (data) { if (team = data) { blackout(); } });
   </script>
 </head>
 
-<body id = "body">
+<body id="body">
+  <div id="blackout"></div>
   <div id="teamselectionmenu">
     <div id="pageturner" class="carousel slide" data-interval="false">
       <div class="carousel-inner">
@@ -82,7 +81,7 @@
     <h1></h1>
   </div>
   <div id="question-info">
-    <p id ="question-info-text"></p>
+    <p id="question-info-text"></p>
   </div>
 
   <div class="teambar">
