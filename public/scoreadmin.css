@@ -250,8 +250,48 @@ table th:last-child{
 	-webkit-animation: color-change-2x 0.5s linear 3 alternate both;
 	        animation: color-change-2x 0.5s linear 3 alternate both;
 }
+.x2 {
+	-webkit-animation: x2 2s linear infinite alternate both;
+	        animation: x2 2s linear infinite alternate both;
+}
+.x3 {
+	-webkit-animation: x3 2s linear infinite alternate both;
+	        animation: x3 2s linear infinite alternate both;
+}
+@-webkit-keyframes x3 {
+  0% {
+    background: greenyellow;
+  }
+  100% {
+    background: blueviolet;
+  }
+}
+@keyframes x3 {
+  0% {
+    background: greenyellow;
+  }
+  100% {
+    background: blueviolet;
+  }
+}
 
- */
+@-webkit-keyframes x2 {
+  0% {
+    background: lightpink;
+  }
+  100% {
+    background: cornflowerblue;
+  }
+}
+@keyframes x2 {
+  0% {
+    background: lightpink;
+  }
+  100% {
+    background: cornflowerblue;
+  }
+}
+
 @-webkit-keyframes color-change-2x {
   0% {
     background: #FFFFFF;

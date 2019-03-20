@@ -70,9 +70,11 @@ function setdropdown() {
 }
 
 function x2() {
-  socket.emit('');
+  socket.emit('setscorefactor', { type: "x2", name: team, positive: 2, negative: 0.5 });
+  document.getElementById("x2").style.visibility = "hidden";
 }
 
 function x3() {
-
+  socket.emit('setscorefactor', { type: "x3", name: team, positive: 3, negative: 1 });
+  document.getElementById("x3").style.visibility = "hidden";
 }

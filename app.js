@@ -46,7 +46,8 @@ var finalfastquestion = [];
 var finalleaderquestion = [];
 var finalerrorquestion = [];
 var question = {};
-var currentquestionnumber = 0;
+var defaultpositivefactor = 1;
+var defaultnegativefactor = 1;
 var Round = []; //name,rule
 var CurrentRound;
 
@@ -339,10 +340,10 @@ io.on('connection', function (socket) {
   //question
 
   socket.on('questionshow', function (data) {
+    resetfactor();
     timerOn = false;
     question = data;
     io.sockets.emit('setquestion', data);
-    //time = (question.time*60);
     time = (question.time);
   });
 
@@ -363,42 +364,44 @@ io.on('connection', function (socket) {
   socket.on('correct', function (data) { io.sockets.emit('correct', data) });
   socket.on('wrong', function (data) { io.sockets.emit('wrong', data) });
   socket.on('setscorefactor', function (data) {
-    if (data.type == "positive") {
-      table[table.findindexbyabbr(data.name)].positivefactor = data.factor;
-    }
-    else {
-      table[table.findindexbyabbr(data.name)].negativefactor = data.factor;
-    }
+      table[table.findindexbyabbr(data.name)].positivefactor = data.positive;
+      table[table.findindexbyabbr(data.name)].negativefactor = data.negative;
+       console.log(data);
+       console.log(table[table.findindexbyabbr(data.name)]);
+      io.sockets.emit('setscorefactor',data);
   });
+
+
   //score
 
   socket.on('setscore', function (data) {
     var index = table.findindexbyabbr(data.name);
     var sum;
     if (data.score > 0) {
+      console.log("positivefactor: "+table[index].positivefactor);
       sum = parseInt(table[index].score) + (data.score * parseInt(table[index].positivefactor));
+      console.log(data.score);
+      console.log(sum);
     }
     else {
-      sum = parseInt(table[index].score) + (data.score * parseInt(table[index].negativefactor));
+      sum = parseFloat(table[index].score) + (data.score * parseFloat(table[index].negativefactor));
     }
     //resuscitation
-    if(CurrentRound == "resuscitation" && sum <= 0)
-    {
+    if (CurrentRound == "resuscitation" && sum <= 0) {
       table.splice(table.findindexbyabbr(data.name), 1);
       io.sockets.emit('init', { table: table, questions: questions });
     }
-    else
-    {
+    else {
       var previousposition = index;
-      console.log(table);
+      //console.log(table);
       table[index].score = sum;
       table.sort(function (a, b) {
         return b.score - a.score;
       });
-      console.log(" ");
-      console.log(table);
+      //console.log(" ");
+      //console.log(table);
       var newposition = table.findindexbyabbr(data.name);
-      console.log(data.score + " score was added to " + data.name);
+      console.log(sum + " score was added to " + data.name);
       console.log("positionchage from: " + previousposition + " to " + newposition);
       io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
       io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
@@ -436,30 +439,50 @@ function roundsetup(round) {
   switch (round) {
     case "semifinal":
       questions = semifinalquestion;
+      resetscore(0);
       break;
     case "resuscitation":
       questions = resuscitationquestion;
-      table.map((team) => {
-         team.score = 50;
-      });
-      io.sockets.emit('init', { table: table, questions: questions });
+       resetscore(50);
       break;
     case "sudden death":
       questions = suddendeathquestion;
+      resetscore(0);
       break;
     case "final:the fast":
       questions = finalfastquestion;
+      resetscore(0);
       break;
     case "final:the leader":
       questions = finalleaderquestion;
+      resetscore(0);
       break;
     case "final:the error detector":
       questions = finalerrorquestion;
+      resetscore(0);
+      defaultnegativefactor = 0;
       break;
 
   }
   // console.log(questions);
   currentquestionnumber = 0;
+}
+
+function resetscore(score)
+{
+  table.map((team) => {
+    team.score = score;
+  });
+  io.sockets.emit('init', { table: table, questions: questions });
+}
+
+function resetfactor()
+{
+   table.map((team)=>{
+     team.positivefactor = defaultpositivefactor;
+     team.negativefactor = defaultnegativefactor;
+   });
+   io.sockets.emit('init', { table: table, questions: questions });
 }
 Number.prototype.pad = function (size) {
   var s = String(this);
