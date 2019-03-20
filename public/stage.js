@@ -19,8 +19,8 @@ function openquestion()
 }
 function openanswer()
 {
-      document.getElementById("head").innerHTML = currentround + " " +data.section+" answer";
-      document.getElementById("text").innerHTML = data.answer;
+      document.getElementById("head").innerHTML = currentround + " " +question.section+" answer";
+      document.getElementById("text").innerHTML = question.answer;
       document.getElementById("body").style.backgroundColor = "white";
 }
 function select()

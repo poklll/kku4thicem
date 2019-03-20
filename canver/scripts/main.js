@@ -44,7 +44,7 @@ function resetcanvas() {
   var context = document.getElementById('canvas').getContext('2d');
   context.fillStyle = "white";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  screenshot();
+ 
 }
 function select() {
   var select = document.getElementById("teamselection");
