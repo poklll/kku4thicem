@@ -400,7 +400,7 @@ socket.on('setquestionscore',function(data){
   socket.on('setscorefactor', function (data) {
     table[table.findindexbyabbr(data.name)].positivefactor = data.positive;
     table[table.findindexbyabbr(data.name)].negativefactor = data.negative;
-    console.log(data);w
+    console.log(data);
     console.log(table[table.findindexbyabbr(data.name)]);
     io.sockets.emit('setscorefactor', data);
   });
@@ -464,7 +464,12 @@ socket.on('setquestionscore',function(data){
   socket.on('LEDOff', function (data) { socket.broadcast.emit('turnOffLedStrip', parseInt(data)); console.log(data); });
   socket.on('ForceLEDOff', function (data) { socket.broadcast.emit('forceTurnOffLedStrip', data); console.log(data); });
 
-
+  socket.on('ping', () => {
+    console.log("ping"+socket.id);
+  });
+  socket.on('pong', () => {
+    console.log("pong"+socket.id);
+  });
 });
 
 function reload() {
@@ -566,3 +571,5 @@ Array.prototype.sortBy = function (p) {
 var server = http.listen((process.env.PORT || 5000), () => {
   console.log('server is running on port', server.address().port);
 });
+
+process.on('uncaughtException', (e) => {console.log(e);});

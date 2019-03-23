@@ -52,6 +52,11 @@ function roundsetup(round)
 
 }
 
+function setscore(team,score)
+{
+    socket.emit('setscore',{name:team,score:score});
+}
+
 function submitscore(score,type)
 {   if(type == "reduce")
     {
@@ -193,10 +198,9 @@ function edit()
 function correct(teamnumber)
 {    
       document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="green";
-      document.getElementById("status"+teamnumber).style.backgroundColor ="green";
+     // document.getElementById("status"+teamnumber).style.backgroundColor ="green";
       var name = document.getElementById("team"+teamnumber+"label").innerHTML;
       var score = parseInt(question.score);
-      alert(score);
       setscore(name,score);
       socket.emit('correct',name);
       socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"green"]);
@@ -211,7 +215,6 @@ function wrong(teamnumber)
     var name = document.getElementById("team"+teamnumber+"label").innerHTML;
     var score = 0-parseInt(question.score);
     setscore(name,score);
-    alert(score);
     socket.emit('wrong',name);
     socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"green"]);
     judge--;

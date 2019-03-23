@@ -83,7 +83,9 @@ function swing(row) {
 
 }
 function colorflash(row) {
-    row.map((node) => {
+
+  
+    row.childNodes.map((node) => {
         node.classList.add("color-change-2x");
         setTimeout(function () { node.classList.remove("color-change-2x"); }, 1000);
     }
@@ -124,6 +126,7 @@ function deleteteam() {
 
 function change(from, to) {
     var nodes = document.getElementsByClassName("scoreitem");
+    
     if (to > from) {
         for (var i = from; i < to + 1; i++) {
             flip(document.getElementsByClassName("scoreitem")[i]);
@@ -156,16 +159,7 @@ function setscore(name, score) {
     teamscore[index].innerHTML = score;
 }
 
-function submitscore(score, type) {
-    if (type == "reduce") {
-        score = 0 - score;
-    }
-    var select = document.getElementById("teamselection");
-    var value = select.options[select.selectedIndex].value;
-    var team = select.options[select.selectedIndex].text;
-    socket.emit('setscore', { name: team, score: score });
 
-}
 
 function factoreffect(data) {
     var row = document.getElementsByClassName("scoreitem")[table.findindexbyabbr(data.name)];
