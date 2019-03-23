@@ -1,143 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>4th ICEM</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<link rel="stylesheet" type="text/css" href="/public/scoreadmin.css">
-<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
- <link rel="stylesheet" href="/public/animate.css">
-<script src="/public/scoreadmin.js"></script>
-<script src='/socket.io/socket.io.js'></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="/public/scoreadmin.css">
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+  <link rel="stylesheet" href="/public/animate.css">
+  <script src="/public/scoreadmin.js"></script>
+  <script src='/socket.io/socket.io.js'></script>
 
-<script>
-  var socket = io();
-    socket.on('positionchange',function(data){change(data.from,data.to)});
-    socket.on('delete',function(data){deleterow(data)});
-    socket.on('init',function(data){table = data.table; questions = data.questions; init();});
-    socket.on('reset',function(data){cleartable();});
-  //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
-    socket.on('scorechange',function(data){setscore(data.name,data.score); table = data.datatable;});
-</script>
+  <script>
+    var socket = io();
+    socket.on('positionchange', function (data) { change(data.from, data.to) });
+    socket.on('delete', function (data) { deleterow(data) });
+    socket.on('init', function (data) { table = data.table; questions = data.questions; init(); });
+    socket.on('reset', function (data) { cleartable(); });
+    //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
+    socket.on('scorechange', function (data) { setscore(data.name, data.score); table = data.datatable; });
+  </script>
 </head>
 
 <body>
 
-     <button class="btn btn-success" onclick="edit()" id="edit">Edit</button>
-    <div id="pageturner" class="carousel slide" data-interval="false" >
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-        <div class="teamedit"> 
-    <div class="form-group">
-          <p>Database</p>
-        <div>
-           <button class="btn btn-info" onclick="reload()">Reload</button>
-        </div>
- 
-    </div>
-    </div>
-    </div>
-    <div class="carousel-item">
-           <div class="scoreedit"> 
-    <div class="form-group">
-          <p>Score</p>
-    <select id="teamselection">
-    
-    </select>
-    <input type="number" class="form-control" id="scoresubmit" placeholder="Score">
-        <div class="buttonpanel">
-            <button class="btn btn-primary" onclick="addscore()">+</button>
-            <button class="btn btn-danger" onclick="reducescore()">-</button>  
-        </div>
+  <button class="btn btn-success" onclick="edit()" id="edit">Edit</button>
+  <div id="pageturner" class="carousel slide" data-interval="false">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <div class="teamedit">
+          <div class="form-group">
+            <p>Database</p>
+            <div>
+              <button class="btn btn-info" onclick="reload()">Reload</button>
+            </div>
 
-    </div>
-    </div>
-    </div>
+          </div>
+        </div>
+      </div>
       <div class="carousel-item">
- 
-    <div class="form-group">
+        <div class="scoreedit">
+          <div class="form-group">
+            <p>Score</p>
+            <select id="teamselection">
+
+            </select>
+            <input type="number" class="form-control" id="scoresubmit" placeholder="Score">
+            <div class="buttonpanel">
+              <button class="btn btn-primary" onclick="addscore()">+</button>
+              <button class="btn btn-danger" onclick="reducescore()">-</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="carousel-item">
+
+        <div class="form-group">
           <p>Stage Control</p>
-         <h6>Button</h6>
-        <div class="buttonpanel">
-            <button id="enableButton"class="btn btn-secondary" onclick="enablebutton()">Button disabled</button>
+          <h6>Button</h6>
+          <div class="buttonpanel">
+            <button id="enableButton" class="btn btn-secondary" onclick="enablebutton()">Button disabled</button>
+          </div>
+          <h6>Siren</h6>
+          <input type="number" class="form-control" id="teamnumber" placeholder="teamnumber">
+
+          <div class="buttonpanel">
+            <button id="enableSiren" class="btn btn-success" onclick="togglesiren()">Turn on Siren</button>
+          </div>
+          <h6>LED</h6>
+          <select id="LEDpattern">
+            <option value="alarm">Alarm</option>
+            <option value="redblink">Redblink</option>
+            <option value="blueblink">Blueblink</option>
+            <option value="red">Red</option>
+            <option value="blue">Blue</option>
+          </select>
+          <div class="buttonpanel" id="LEDpanel">
+            <button id="LEDon" class="btn btn-success" onclick="LEDon()">turn on LED</button>
+            <button id="LEDoff" class="btn btn-danger" onclick="LEDoff()">turn off LED</button>
+            <button id="ForceLEDoff" class="btn btn-dark" onclick="ForceLEDoff()">force turn off LED</button>
+          </div>
+
         </div>
-        <h6>Siren</h6>
-    <input type="number" class="form-control" id="teamnumber" placeholder="teamnumber">
- 
-        <div class="buttonpanel">
-            <button id="enableSiren"class="btn btn-success" onclick="togglesiren()">Turn on Siren</button>
+      </div>
+      <div class="carousel-item">
+        <div class="question">
+          <div class="form-group">
+            <p>Question</p>
+            <select id="questionselection" onchange="selectquestion()">
+            </select>
+            <p id="questiontext">This is it</p>
+            <input type="number" class="form-control" id="questionscore" placeholder="Score">
+            <input type="number" class="form-control" id="questiontime" placeholder="Time">
+            <div class="buttonpanel">
+              <button class="btn btn-primary" onclick="submitquestion()" id="questionsubmit">submit</button>
+              <button class="btn btn-success" id="toggletimer" onclick="timerOn()">start timer</button>
+            </div>
+
+          </div>
         </div>
-        <h6>LED</h6>
-    <select   id="LEDpattern" >
-         <option value="alarm">Alarm</option>
-         <option value="redblink">Redblink</option>
-         <option value="blueblink">Blueblink</option>
-         <option value="red">Red</option>
-         <option value="blue">Blue</option>
-    </select>
-        <div class="buttonpanel" id="LEDpanel">
-            <button id ="LEDon" class="btn btn-success" onclick="LEDon()">turn on LED</button>
-            <button id ="LEDoff" class="btn btn-danger" onclick="LEDoff()">turn off LED</button>
-            <button id ="ForceLEDoff" class="btn btn-dark" onclick="ForceLEDoff()">force turn off LED</button>
-        </div>
+      </div>
+      <div class="clear"></div>
 
     </div>
-    </div> 
-       <div class="carousel-item">
-           <div class="question"> 
-    <div class="form-group">
-          <p>Question</p>
-    <select id="questionselection" onchange="selectquestion()">
-    </select>
-       <p id="questiontext">This is it</p>
-    <input type="number" class="form-control" id="questionscore" placeholder="Score">
-    <input type="number" class="form-control" id="questiontime" placeholder="Time">
-        <div class="buttonpanel">
-               <button class="btn btn-primary" onclick="submitquestion()" id="questionsubmit">submit</button>
-            <button class="btn btn-success" id="toggletimer" onclick="timerOn()" >start timer</button>
-        </div>
 
-    </div>
-    </div>
-    </div>
-     <div class="clear"></div>
-        
-    </div>
-        
-  <a class="carousel-control-prev" href="#pageturner" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color:chocolate;"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#pageturner" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true" style="background-color:chocolate;"></span>
-    <span class="sr-only">Next</span>
-  </a>
-    </div>
+    <a class="carousel-control-prev" href="#pageturner" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color:chocolate;"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#pageturner" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true" style="background-color:chocolate;"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
 
 
-    <div class = "scoreview">
-     
-        <table class="table table-hover" id="scoretable">
-            <thead>
-                <tr>
-      <th scope="col">Rank</th>
-      <th scope="col">Name</th>
-      <th scope="col">Score</th>
-    </tr >
-            </thead>
-            <tbody id="tablepanel">
-                
-            </tbody>
-            </table>
-   </div>
+  <div class="scoreview">
+
+    <table class="table table-hover" id="scoretable">
+      <thead>
+        <tr>
+          <th scope="col">Rank</th>
+          <th scope="col">Name</th>
+          <th scope="col">Score</th>
+        </tr>
+      </thead>
+      <tbody id="tablepanel">
+
+      </tbody>
+    </table>
+  </div>
 
 
 
 
 
 </body>
+
 </html>

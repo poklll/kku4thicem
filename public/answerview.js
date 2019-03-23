@@ -4,13 +4,15 @@ var edited = true;
 var timer = false;
 var question = {};
 var judge;
+var currentround;
 function addimage(data)
 {   var index = table.findindexbyabbr(data.name);
-    var nameimg = "team"+(index+1)+"img";
-    var namelabel = "team"+(index+1)+"label";
-  
-    document.getElementById(nameimg).src = data.image;
-    document.getElementById(namelabel).innerHTML = data.name;
+    if(currentround != "final:the fast")
+    {
+        var nameimg = "team"+(index+1)+"img";
+        document.getElementById(nameimg).src = data.image;
+    }
+    document.getElementById("team"+(index+1)+"panel").getElementsByClassName('btn-container')[0].style.visibility = "visible";
 }
 
 
@@ -18,9 +20,37 @@ function addimage(data)
 {   
      setdropdown();
      setqeustionlist();
+
+
+    
+     for(var i = 0;i<table.length;i++)
+     {
+        document.getElementById("team"+(i+1)+"label").innerHTML = table[i].abbr;
+
+     }
+     for(var i = 0;i<5;i++)
+     {
+        document.getElementById("team"+(i+1)+"label2").innerHTML = table[i].abbr;
+     }
+    
+
      
 }
 
+function roundsetup(round)
+{
+     currentround = round;
+     if(currentround == "final:the fast")
+     {
+         document.getElementById("thefast").style.visibility = "visible";
+     }
+     else
+     {
+        document.getElementById("thefast").style.visibility = "hidden";
+     }
+     
+
+}
 
 function setscore(team,score)
 {   
@@ -167,6 +197,7 @@ function edit()
 function correct(teamnumber)
 {    
       document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="green";
+      document.getElementById("status"+teamnumber).style.backgroundColor ="green";
       var name = document.getElementById("team"+teamnumber+"label").innerHTML;
       var score = parseInt(question.score);
       setscore(name,score);
@@ -178,6 +209,7 @@ function correct(teamnumber)
 function wrong(teamnumber)
 {
     document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="red";
+    document.getElementById("status"+teamnumber).style.backgroundColor ="red";
     var name = document.getElementById("team"+teamnumber+"label").innerHTML;
     var score = 0-parseInt(question.score);
     setscore(name,score);
@@ -205,14 +237,18 @@ function resetpanel()
     {
         teampanel[i].style.backgroundColor = "cornflowerblue";
     }
-    socket.emit('screenshot',true);
+    var status= document.getElementsByClassName("status");
+    for(i=0;i<status.length;i++)
+    {
+        status[i].style.backgroundColor = "white";
+    }
+    //socket.emit('screenshot',true);
 }
 
 Array.prototype.findindexbysection = function(name)
 {
   var i;
   for (i = 0; i < this.length; i++) {
-      console.log(this[i].abbr);
     if(this[i].section == name)
         {return i;}
   }
@@ -222,7 +258,6 @@ Array.prototype.findindexbyabbr = function(name)
 {
   var i;
   for (i = 0; i < this.length; i++) {
-      console.log(this[i].abbr);
     if(this[i].abbr == name)
         {return i;}
   }

@@ -14,6 +14,7 @@ Canver = (function() {
     this.colorizer = new Colorizer;
     this.ctx.fillStyle = "#fa0";
     this.canvas.style.display = 'block';
+
   }
   Canver.prototype.hide = function() {
     return this.canvas.style.display = 'none';

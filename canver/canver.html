@@ -36,23 +36,23 @@
     socket.on('screenshot', function () { screenshot(); });
     socket.on('setteamlist', function (data) { table = data; setdropdown(); });
     socket.on('clearcanvas', function () { resetcanvas() });
-    socket.on('showhelper', function (data) {
-      if (data) {
-        document.getElementById("helper").style.visibility = "visible";
-      }
-      else {
-        document.getElementById("helper").style.visibility = "hidden";
-      }
-    });
-    socket.on('showleader', function (data) {
-      if (data) {
-        document.getElementById("leader-selector").style.visibility = "visible";
-      }
-      else {
-        document.getElementById("leader-selector").style.visibility = "hidden";
-      }
-    });
     socket.on('blackout', function (data) { if (team == data) { blackout(); } });
+    socket.on('setquestion', function (data) {
+      question = data;
+    });
+    socket.on('openquestion', function () {
+      if (currentround == "final:the error detector") {
+        showquestion();
+      }
+    });
+    socket.on('round', function (data) { roundsetup(data); });
+    socket.on('scorechange', function (data) {
+      table = data.datatable;
+      score = table[table.findindexbyabbr(team)].score;
+    });
+    socket.on('hitsetscore', function (data) {
+      setscore(data);
+    })
   </script>
 </head>
 
@@ -75,17 +75,18 @@
   </div>
 
   <div id="score-selection">
+
   </div>
 
   <div id="leader-selector">
     <div class="flex-container">
-      <div class="flex-head">Select question for your leader!</div>
-      <div class="flex-item" id="leader1-1" onclick="">1.1 Hard</div>
-      <div class="flex-item" id="leader1-2">1.2 Easy</div>
-      <div class="flex-item" id="leader2-1">2.1 Hard</div>
-      <div class="flex-item" id="leader2-2">2.2 Easy</div>
+      <div class="flex-head"></div>
+      <div class="flex-item" id="easy" onclick="selectleader(this)">Easy</div>
+      <div class="flex-item" id="hard" onclick="selectleader(this)">Hard</div>
     </div>
   </div>
+
+
 
   <div id="teamselectionmenu">
     <div id="pageturner" class="carousel slide" data-interval="false">
@@ -120,12 +121,12 @@
     </div>
     <div class='separator'></div>
     <div id='colors'>
-      <div class='color' data-color='#000'></div>
+      <div class='color active' data-color='#000'></div>
       <div class='color' data-color='#ECA81F'></div>
       <div class='color' data-color='#4F7C81'></div>
       <div class='color' data-color='#91A170'></div>
       <div class='color' data-color='#D44503'></div>
-      <div class='color active' data-color='' id='rainbow'></div>
+      <div class='color' data-color='' id="rainbow"></div>
     </div>
     <div class='separator'></div>
     <div id='tools'>

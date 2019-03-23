@@ -217,6 +217,11 @@ table th:last-child{
 {
     font-size: 3vh;
 }
+
+.factor
+{
+  visibility: hidden;
+}
 .logoimg
 {
     width: 50px;
@@ -251,44 +256,68 @@ table th:last-child{
 	        animation: color-change-2x 0.5s linear 3 alternate both;
 }
 .x2 {
-	-webkit-animation: x2 2s linear infinite alternate both;
-	        animation: x2 2s linear infinite alternate both;
+	-webkit-animation: x2 1s linear infinite alternate both;
+	        animation: x2 1s linear infinite alternate both;
 }
 .x3 {
-	-webkit-animation: x3 2s linear infinite alternate both;
-	        animation: x3 2s linear infinite alternate both;
+	-webkit-animation: x3 1s linear infinite alternate both;
+	        animation: x3 1s linear infinite alternate both;
 }
-@-webkit-keyframes x3 {
+.leader {
+	-webkit-animation: leader 1s linear infinite alternate both;
+	        animation: leader 1s linear infinite alternate both;
+}
+
+
+@-webkit-keyframes leader {
   0% {
-    background: greenyellow;
+    background: crimson;
   }
   100% {
-    background: blueviolet;
+    background: blue;
+  }
+}
+@keyframes leader {
+  0% {
+    background: crimson;
+  }
+  100% {
+    background: blue;
+  }
+}
+
+
+@-webkit-keyframes x3 {
+  0% {
+    background: white;
+  }
+  100% {
+    background: greenyellow;
   }
 }
 @keyframes x3 {
   0% {
-    background: greenyellow;
+    background: white;
   }
   100% {
-    background: blueviolet;
+    background: greenyellow;
   }
 }
 
 @-webkit-keyframes x2 {
   0% {
-    background: lightpink;
+    background: white;
   }
   100% {
-    background: cornflowerblue;
+    background: lightpink;
   }
 }
 @keyframes x2 {
   0% {
-    background: lightpink;
+    background: white;
   }
   100% {
-    background: cornflowerblue;
+    background: lightpink;
   }
 }
 

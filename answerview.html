@@ -31,7 +31,10 @@
         judge = table.length;
     });
         socket.on('setquestionlist', function(data){questions = data; init();});
-
+        socket.on('round',function(data){roundsetup(data);});
+        
+      
+    
     </script>
 </head>
 
@@ -42,6 +45,62 @@
         <img id="cancel" src="asset/cancel.png" onclick="cancel()">
     </div>
 
+    <diV id="thefast">
+            <div>
+                    <div class="flex-container2">
+                            <div class="flex-item2" id="team1">
+                                <div class="teampanel" id="team1panel2">
+                                    <p class="teamlabel" id="team1label2"></p>
+                                    <div class="btn-container">
+                                        <button class="btn btn-success correct" onclick="correct(1)">Correct</button>
+                                        <button class="btn btn-danger wrong" onclick="wrong(1)">Wrong</button>
+                                    </div>
+                                </div>
+                                <div class="status" id="status1">Answer</div>
+                            </div>
+                            <div class="flex-item2" id="team2">
+                                <div class="teampanel" id="team2panel2">
+                                    <p class="teamlabel" id="team2label2"></p>
+                                    <div class="btn-container">
+                                        <button class="btn btn-success correct" onclick="correct(2)">Correct</button>
+                                        <button class="btn btn-danger wrong" onclick="wrong(2)">Wrong</button>
+                                    </div>
+                                </div>
+                                <div class="status" id="status2"></div>
+                            </div>
+                            <div class="flex-item2" id="team3">
+                                <div class="teampanel" id="team3panel2">
+                                    <p class="teamlabel" id="team3label2"></p>
+                                    <div class="btn-container">
+                                        <button class="btn btn-success correct" onclick="correct(3)">Correct</button>
+                                        <button class="btn btn-danger wrong" onclick="wrong(3)">Wrong</button>
+                                    </div>
+                                </div>
+                                <div class="status" id="status3"></div>
+                            </div>
+                            <div class="flex-item2" id="team4">
+                                <div class="teampanel" id="team4panel2">
+                                    <p class="teamlabel" id="team4label2"></p>
+                                    <div class="btn-container">
+                                        <button class="btn btn-success correct" onclick="correct(4)">Correct</button>
+                                        <button class="btn btn-danger wrong" onclick="wrong(4)">Wrong</button>
+                                    </div>
+                                </div>
+                                <div class="status" id="status4"></div>
+                            </div>
+                            <div class="flex-item2" id="team5">
+                                <div class="teampanel" id="team5panel2">
+                                    <p class="teamlabel" id="team5label2"></p>
+                                    <div class="btn-container">
+                                        <button class="btn btn-success correct" onclick="correct(5)">Correct</button>
+                                        <button class="btn btn-danger wrong" onclick="wrong(5)">Wrong</button>
+                                    </div>
+                                </div>
+                                <div class="status" id="status5"></div>
+                            </div>
+            </div>
+    </diV>
+    </diV>
     <button class="btn btn-success" onclick="edit()" id="edit">Edit</button>
     <div id="pageturner" class="carousel slide" data-interval="false">
         <div class="carousel-inner">
@@ -131,7 +190,7 @@
             <img id="team1img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team1panel">
                 <p class="teamlabel" id="team1label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(1)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(1)">Wrong</button>
                 </div>
@@ -141,7 +200,7 @@
             <img id="team2img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team2panel">
                 <p class="teamlabel" id="team2label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(2)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(2)">Wrong</button>
                 </div>
@@ -151,7 +210,7 @@
             <img id="team3img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team3panel">
                 <p class="teamlabel" id="team3label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(3)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(3)">Wrong</button>
                 </div>
@@ -161,7 +220,7 @@
             <img id="team4img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team4panel">
                 <p class="teamlabel" id="team4label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(4)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(4)">Wrong</button>
                 </div>
@@ -171,7 +230,7 @@
             <img id="team5img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team5panel">
                 <p class="teamlabel" id="team5label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(5)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(5)">Wrong</button>
                 </div>
@@ -181,7 +240,7 @@
             <img id="team6img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team6panel">
                 <p class="teamlabel" id="team6label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(6)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(6)">Wrong</button>
                 </div>
@@ -191,7 +250,7 @@
             <img id="team7img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team7panel">
                 <p class="teamlabel" id="team7label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(7)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(7)">Wrong</button>
                 </div>
@@ -201,7 +260,7 @@
             <img id="team8img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team8panel">
                 <p class="teamlabel" id="team8label"></p>
-                <div>
+                <div class="btn-container">
                     <button class="btn btn-success correct" onclick="correct(8)">Correct</button>
                     <button class="btn btn-danger wrong" onclick="wrong(8)">Wrong</button>
                 </div>

@@ -1,6 +1,10 @@
 var __bind = function (fn, me) { return function () { return fn.apply(me, arguments); }; };
 var table = [];
 var team;
+var score;
+var question;
+var leader = [];
+var currentround;
 /*if (!("ontouchend" in document || location.search === '?debug=1')) {
   window.location = 'unsupported.html';
 }*/
@@ -22,6 +26,29 @@ window.onload = function () {
 
 
 };
+function roundsetup(round) {
+  currentround = round;
+  if (round == "semifinal") {
+    document.getElementById("helper").style.visibility = "visible";
+  }
+  else {
+    document.getElementById("helper").style.visibility = "hidden";
+  }
+
+  if (round == "final:the leader") {
+    document.getElementById('leader-selector').style.visibility = "visible";
+    document.getElementsByClassName('flex-head')[0].innerHTML = "Topic 1 : Subgroup 1<br>Select question for your leader!";
+
+  }
+  else {
+    document.getElementById('leader-selector').style.visibility = "hidden";
+    leader = [];
+  }
+
+
+}
+
+
 
 function eraser() {
   var color = '#FFFFFF';
@@ -33,18 +60,32 @@ function eraser() {
 
 
 }
+
+
+function showquestion()
+{
+  var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext("2d");
+        ctx.font = "30px Impact";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText(question.question, canvas.width / 2, canvas.height / 2);
+}
 function screenshot() {
 
   var img = document.getElementById('canvas').toDataURL('image/jpeg', 0.05);
   socket.emit('screensubmit', { image: img, name: team });
-
+  if(question.section == "1-"+leader[0] || question.section == "2-"+leader[1] )
+  {
+    socket.emit('setscorefactor', { type: "Leader", name: team, positive: 2, negative: 2});
+  }
 }
 
 function resetcanvas() {
   var context = document.getElementById('canvas').getContext('2d');
   context.fillStyle = "white";
   context.fillRect(0, 0, canvas.width, canvas.height);
- 
+
 }
 function select() {
   var select = document.getElementById("teamselection");
@@ -55,6 +96,28 @@ function select() {
 
 
 }
+
+function selectleader(level) {
+  if (currentround == "final:the leader" && leader.length < 2) {
+    leader.push(level.innerHTML);
+    level.style.backgroundImage = "url('/asset/leadership.png')";
+  }
+  if (leader.length == 1) {
+    setTimeout(() => {
+      document.getElementsByClassName('flex-head')[0].innerHTML = "Topic 2 : Subgroup 2<br>Select question for your leader!";
+      document.getElementById("easy").style.backgroundImage = "none";
+      document.getElementById("hard").style.backgroundImage = "none";
+    }, 500);
+
+  }
+  else {
+
+    setTimeout(() => {
+      document.getElementById('leader-selector').style.visibility = "hidden";
+    }, 500);
+  }
+}
+
 
 function setdropdown() {
   var select = document.getElementById("teamselection");
@@ -79,7 +142,21 @@ function x3() {
   document.getElementById("x3").style.visibility = "hidden";
 }
 
-function blackout()
-{
+function blackout() {
   document.getElementById("blackout").style.visibility = "visible";
 }
+
+function setscore(data)
+{
+    if(team == data)
+    {
+        document.getElementById("score-selection").style.visibility ="visible";
+    }
+}
+Array.prototype.findindexbyabbr = function (name) {
+  var i;
+  for (i = 0; i < this.length; i++) {
+    //   console.log(this[i].abbr);
+    if (this[i].abbr == name) { return i; }
+  }
+};

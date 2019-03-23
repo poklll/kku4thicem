@@ -83,12 +83,11 @@ function swing(row) {
 
 }
 function colorflash(row) {
-    row.childNodes[1].classList.add("color-change-2x");
-    setTimeout(function () { row.childNodes[1].classList.remove("color-change-2x"); }, 1000);
-    row.childNodes[3].classList.add("color-change-2x");
-    setTimeout(function () { row.childNodes[3].classList.remove("color-change-2x"); }, 1000);
-    row.childNodes[4].classList.add("color-change-2x");
-    setTimeout(function () { row.childNodes[4].classList.remove("color-change-2x"); }, 1000);
+    row.map((node) => {
+        node.classList.add("color-change-2x");
+        setTimeout(function () { node.classList.remove("color-change-2x"); }, 1000);
+    }
+    );
 }
 function x2(row) {
     row.childNodes[1].classList.add("x2");
@@ -100,6 +99,13 @@ function x3(row) {
     row.childNodes[1].classList.add("x3");
     row.childNodes[3].classList.add("x3");
     row.childNodes[4].classList.add("x3");
+
+}
+
+function leader(row) {
+    row.childNodes[1].classList.add("leader");
+    row.childNodes[3].classList.add("leader");
+    row.childNodes[4].classList.add("leader");
 
 }
 function addteam() {
@@ -166,9 +172,17 @@ function factoreffect(data) {
     if (data.type == "x2") {
         x2(row);
     }
-    else {
+    else if(data.type == "x3"){
         x3(row);
     }
+    else if(data.type == "Leader")
+    {
+        leader(row);
+    }
+    
+    row.getElementsByClassName("teamname")[0].getElementsByClassName('teamnametext')[0].innerHTML += "  "+data.type;
+    
+
 }
 
 

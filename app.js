@@ -27,6 +27,18 @@ router.get('/committee', function (req, res) {
 router.get('/stage', function (req, res) {
   res.sendFile(path.join(__dirname + '/stage.html'));
 });
+router.get('/projector', function (req, res) {
+  res.sendFile(path.join(__dirname + '/projector.html'));
+});
+router.get('/projector-left', function (req, res) {
+  res.sendFile(path.join(__dirname + '/projector-left.html'));
+});
+router.get('/projector-middle', function (req, res) {
+  res.sendFile(path.join(__dirname + '/projector-middle.html'));
+});
+router.get('/projector-right', function (req, res) {
+  res.sendFile(path.join(__dirname + '/projector-right.html'));
+});
 app.use('/', router);
 
 if (process.env.NODE_ENV === 'production') {
@@ -118,14 +130,14 @@ function readsheet(auth) {
   //set up table
   sheets.spreadsheets.values.get({
     spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
-    range: 'TeamList!A2:D',
+    range: 'TeamList!A2:E',
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
     if (rows.length) {
       //console.log('Question : Section,Question,Score,Time:');
       rows.map((row) => {
-        table.push({ abbr: row[0], name: row[1], country: row[2], score: row[3], positivefactor: 1, negativefactor: 1 });
+        table.push({ abbr: row[0], name: row[1], country: row[2], score: row[3], buttonnumber: row[4], positivefactor: 1, negativefactor: 1 });
         // console.log(`${row[0]} , ${row[1]} , ${row[2]} , ${row[3]}`);
 
       });
@@ -343,14 +355,12 @@ io.on('connection', function (socket) {
   });
   socket.on('judgecomplete', function () {
     console.log("judge was completed");
-    if(CurrentRound == "semifinal" && (question.section == 4 || question.section == 8))
-    {  
-       if(table[table.length-1].score == table[table.length-2].score)
-       {
-        table.splice(table.length-1,1);
-        io.sockets.emit('blackout',table[table.length-1].name);
+    if (CurrentRound == "semifinal" && (question.section == 4 || question.section == 8)) {
+      if (table[table.length - 1].score == table[table.length - 2].score) {
+        table.splice(table.length - 1, 1);
+        io.sockets.emit('blackout', table[table.length - 1].name);
         socket.emit('init', { table: table, questions: questions });
-       }
+      }
     }
   }
   )
@@ -431,7 +441,15 @@ io.on('connection', function (socket) {
 
   //stage
 
-  socket.on('buttonHit', function (data) { console.log(data); })
+  socket.on('buttonHit', function (data) {
+    console.log("button " + data + "was hit!");
+    if(CurrentRound == "resuscitation")
+    {
+      var name = table.findabbrbybtn(data);
+      io.sockets.emit('hitsetscore',name);
+      
+    }
+  })
   socket.on('success', function (data) { console.log(data) });
   socket.on('sirenOn', function (data) { socket.broadcast.emit('turnOnSiren', data) });
   socket.on('sirenOff', function (data) { socket.broadcast.emit('turnOffSiren', data) });
@@ -518,6 +536,13 @@ Array.prototype.findindexbyabbr = function (name) {
   }
 };
 
+Array.prototype.findabbrbybtn = function (number) {
+  var i;
+  for (i = 0; i < this.length; i++) {
+    //   console.log(this[i].abbr);
+    if (this[i].buttonnumber == number) { return this[i].abbr; }
+  }
+};
 Array.prototype.sortBy = function (p) {
   return this.slice(0).sort(function (a, b) {
     return (a[p] > b[p]) ? 1 : (a[p] < b[p]) ? -1 : 0;

@@ -11,8 +11,9 @@ html, body {
   font-family: Helvetica;
 }
 
-canvas {
+#canvas {
   display: none;
+
 }
 
 #backgroundSetup {
@@ -276,7 +277,7 @@ button {
   align-self: center;
   margin-top: 20vh;
   opacity: 0.9;
-  z-index: 2;
+  z-index: 4;
   font-size: 30px;
   border-radius: 10px;
   box-shadow: 0 0 3px black;
@@ -302,7 +303,6 @@ button {
   align-items: center;
 }
 
-.scoreedit {}
 
 .teamheader {
   position: fixed;
@@ -400,6 +400,7 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   font-size: 70px;
 }
 .flex-item {
@@ -411,16 +412,32 @@ p {
   justify-content: center;
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   font-size: 50px; 
-  color: white;
-  background-color: crimson;
+  color: black;
   border: 3px solid black;
+  background-size: cover;
 }
 
+#easy
+{
+   background-color: chartreuse;
+}
+
+#hard
+{
+  background-color: crimson;
+}
 #blackout
 { z-index: 4;
   position: fixed;
   height: 400vh;
   width: 400vw;
   background-color: black;
+  visibility: hidden;
+}
+#score-selection
+{
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
   visibility: hidden;
 }

@@ -3,7 +3,7 @@ Colorizer = (function() {
   function Colorizer() {
     this.hue = 0;
     this.saturation = 0;
-    this.color = '';
+    this.color = '#000';
   }
   Colorizer.prototype.nextColour = function() {
     if (this.color === '') {
