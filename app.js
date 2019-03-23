@@ -275,6 +275,7 @@ var count = function () {
       timerOn = false;
       io.sockets.emit('screenshot', true);
       io.sockets.emit('clearcanvas', true);
+      io.sockets.emit('timeup',true);
     }
   }
 }

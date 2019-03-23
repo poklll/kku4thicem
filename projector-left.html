@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>4th ICEM</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src="public/html2canvas.min.js"></script>
+    <script src="public/projector.js"></script>
+    <link rel="stylesheet" type="text/css" href="public/projector.css">
+    <link rel="stylesheet" href="public/animate.css">
+    <script>
+        var socket = io();
+        socket.on('addimage', function (data) { addimage(data); });
+        socket.on('init', function (data) { table = data.table; questions = data.questions; init(); });
+        socket.on('setquestion', function (data) {
+        question = data;
+        resetpanel();
+        judge = table.length;
+    });
+        socket.on('round',function(data){roundsetup(data);});
+        socket.on('correct',function(data){
+            
+            document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="green";
+        });
+        socket.on('wrong',function(data){
+            document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="red";
+        });
+      
+    
+    </script>
+</head>
+
+<body>
+
+    <div id="fullscreen">
+        <img id="selected">
+        <img id="cancel" src="asset/cancel.png" onclick="cancel()">
+    </div>
+
+    <diV id="thefast">
+            <div>
+                    <div class="flex-container2">
+                            <div class="flex-item2" id="team1">
+                                <div class="teampanel" id="team1panel2">
+                                    <p class="teamlabel" id="team1label2"></p>
+                    
+                                </div>
+                                <div class="status" id="status1">Answer</div>
+                            </div>
+                            <div class="flex-item2" id="team2">
+                                <div class="teampanel" id="team2panel2">
+                                    <p class="teamlabel" id="team2label2"></p>
+                                    
+                                </div>
+                                <div class="status" id="status2"></div>
+                            </div>
+                            <div class="flex-item2" id="team3">
+                                <div class="teampanel" id="team3panel2">
+                                    <p class="teamlabel" id="team3label2"></p>
+                                    
+                                </div>
+                                <div class="status" id="status3"></div>
+                            </div>
+                            <div class="flex-item2" id="team4">
+                                <div class="teampanel" id="team4panel2">
+                                    <p class="teamlabel" id="team4label2"></p>
+                                   
+                                </div>
+                                <div class="status" id="status4"></div>
+                            </div>
+                            <div class="flex-item2" id="team5">
+                                <div class="teampanel" id="team5panel2">
+                                    <p class="teamlabel" id="team5label2"></p>
+                                    
+                                </div>
+                                <div class="status" id="status5"></div>
+                            </div>
+            </div>
+    </diV>
+    </diV>
+
+
+
+    <div class="flex-container">
+        <div class="flex-item" id="team1">
+            <img id="team1img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team1panel">
+                <p class="teamlabel" id="team1label"></p>
+                <div class="btn-container">
+                    <button class="btn btn-success correct" onclick="correct(1)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(1)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team2">
+            <img id="team2img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team2panel">
+                <p class="teamlabel" id="team2label"></p>
+                <div class="btn-container">
+                    <button class="btn btn-success correct" onclick="correct(2)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(2)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team3">
+            <img id="team3img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team3panel">
+                <p class="teamlabel" id="team3label"></p>
+                <div class="btn-container">
+                    <button class="btn btn-success correct" onclick="correct(3)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(3)">Wrong</button>
+                </div>
+            </div>
+        </div>
+        <div class="flex-item" id="team4">
+            <img id="team4img" onclick="fullscreen(this.src)">
+            <div class="teampanel" id="team4panel">
+                <p class="teamlabel" id="team4label"></p>
+                <div class="btn-container">
+                    <button class="btn btn-success correct" onclick="correct(4)">Correct</button>
+                    <button class="btn btn-danger wrong" onclick="wrong(4)">Wrong</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+
+</body>
+
+</html>

@@ -32,7 +32,11 @@
     });
         socket.on('setquestionlist', function(data){questions = data; init();});
         socket.on('round',function(data){roundsetup(data);});
-        
+        socket.on('timeup',function(){
+            timer = false;
+            document.getElementById('toggletimer').className ="btn btn-success";
+             document.getElementById('toggletimer').innerHTML = "start timer";
+        });
       
     
     </script>
