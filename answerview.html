@@ -27,6 +27,7 @@
         socket.on('init', function (data) { table = data.table; questions = data.questions; init(); });
         socket.on('setquestion', function (data) {
         question = data;
+        console(question);
         resetpanel();
         judge = table.length;
     });

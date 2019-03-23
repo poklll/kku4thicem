@@ -52,11 +52,6 @@ function roundsetup(round)
 
 }
 
-function setscore(team,score)
-{   
-    socket.emit('setscore',{name:team,score:score});
-}
-
 function submitscore(score,type)
 {   if(type == "reduce")
     {
@@ -79,6 +74,7 @@ function reducescore()
      var score = parseInt(document.getElementById("scoresubmit").value);
     submitscore(score,"reduce");
 }
+
 
 function resetcanvas()
 {
@@ -215,7 +211,7 @@ function wrong(teamnumber)
     var score = 0-parseInt(question.score);
     setscore(name,score);
     socket.emit('wrong',name);
-    socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"red"]);
+    socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"green"]);
     judge--;
     iscomplete();
 }
