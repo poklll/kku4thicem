@@ -32,12 +32,11 @@
     });
         socket.on('round',function(data){roundsetup(data);});
         socket.on('correct',function(data){
-            console.log("team"+table.findindexbyabbr(data)+"panel");
-            document.getElementById("team"+table.findindexbyabbr(data)+"panel").style.backgroundColor ="green";
+            
+            document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="green";
         });
         socket.on('wrong',function(data){
-            console.log("team"+table.findindexbyabbr(data)+"panel");
-            document.getElementById("team"+table.findindexbyabbr(data)+"panel").style.backgroundColor ="red";
+            document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="red";
         });
     
     </script>

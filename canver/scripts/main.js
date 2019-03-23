@@ -93,7 +93,8 @@ function select() {
   team = name;
   document.getElementById("teamselectionmenu").style.visibility = "hidden";
   document.getElementById("name").innerHTML = team;
-
+  score = table[table.findindexbyabbr(team)].score;
+  setscore(team);
 
 }
 
@@ -108,8 +109,7 @@ function selectleader(level) {
       document.getElementById("easy").style.backgroundImage = "none";
       document.getElementById("hard").style.backgroundImage = "none";
     }, 500);
-
-  }
+}
   else {
 
     setTimeout(() => {
@@ -148,10 +148,27 @@ function blackout() {
 
 function setscore(data)
 {
-    if(team == data)
-    {
-        document.getElementById("score-selection").style.visibility ="visible";
+    if(team == data && currentround == "resuscitation")
+    {   var scoreselection = document.getElementById("score-selection");
+        scoreselection.style.visibility ="visible";
+        choices = Math.floor(score / 10);
+        alert
+        for(var i=1;i<=choices;i++)
+        {
+            var item =document.createElement("div");
+            item.className = "score-item";
+            scoreselection.appendChild(item);
+            item.innerHTML = i*10;
+            item.addEventListener("click",selectscore(this.innerHTML));
+        }
+       
     }
+}
+
+function selectscore(score)
+{
+  socket.emit('setquestionscore',score);
+  scoreselection.style.visibility ="hidden";
 }
 Array.prototype.findindexbyabbr = function (name) {
   var i;

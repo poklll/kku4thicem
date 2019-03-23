@@ -31,6 +31,7 @@
     //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
     socket.on('scorechange', function (data) { setscore(data.name, data.score); table = data.datatable; });
     socket.on('setscorefactor', function (data) { factoreffect(data); });
+
   </script>
 </head>
 

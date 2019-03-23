@@ -29,6 +29,7 @@
     socket.on('setquestion', function (data) {
       document.getElementById("round-info").style.visibility = "hidden";
       document.getElementById("question-info").style.visibility = "visible";
+      document.getElementById("body").style.backgroundColor = "white";
       var questioninfo;
       if (data.level == undefined && data.score == undefined) {
         questioninfo = "Time: " + tomin(data.time) + " min";

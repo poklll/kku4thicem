@@ -202,6 +202,7 @@ function correct(teamnumber)
       var score = parseInt(question.score);
       setscore(name,score);
       socket.emit('correct',name);
+      socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"green"]);
       judge--;
       iscomplete();
 }
@@ -214,6 +215,7 @@ function wrong(teamnumber)
     var score = 0-parseInt(question.score);
     setscore(name,score);
     socket.emit('wrong',name);
+    socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"red"]);
     judge--;
     iscomplete();
 }
@@ -263,6 +265,13 @@ Array.prototype.findindexbyabbr = function(name)
   }
 
 };
+Array.prototype.findbtnbyabbr = function (number) {
+    var i;
+    for (i = 0; i < this.length; i++) {
+      //   console.log(this[i].abbr);
+      if (this[i].buttonnumber == number) { return i; }
+    }
+  };
 NodeList.prototype.map = Array.prototype.map;
 Number.prototype.pad = function (size) {
     var s = String(this);

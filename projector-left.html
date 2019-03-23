@@ -19,6 +19,8 @@
     <script src='/socket.io/socket.io.js'></script>
     <script src="public/html2canvas.min.js"></script>
     <script src="public/projector.js"></script>
+    <script src='/socket.io/socket.io.js'></script>
+  
     <link rel="stylesheet" type="text/css" href="public/projector.css">
     <link rel="stylesheet" href="public/animate.css">
     <script>
@@ -41,6 +43,16 @@
       
     
     </script>
+    <script>
+    var socket = io();
+    socket.on('positionchange', function (data) { change(data.from, data.to) });
+    socket.on('delete', function (data) { deleterow(data) });
+    socket.on('init', function (data) { table = data.table; questions = data.questions; init(); });
+    socket.on('reset', function (data) { cleartable(); });
+    //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
+    socket.on('scorechange', function (data) { setscore(data.name, data.score); table = data.datatable; });
+    socket.on('setscorefactor', function (data) { factoreffect(data); });
+  </script>
 </head>
 
 <body>

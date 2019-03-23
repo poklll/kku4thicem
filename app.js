@@ -41,12 +41,12 @@ router.get('/projector-right', function (req, res) {
 });
 app.use('/', router);
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
-}
-app.get('*', (request, response) => {
-  response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-});
+//if (process.env.NODE_ENV === 'production') {
+ // app.use(express.static('client/build'));
+//}
+//app.get('*', (request, response) => {
+ // response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+//});
 
 var io = require('socket.io')(http);
 var table = []; //abbr,name,country,score
@@ -375,7 +375,11 @@ io.on('connection', function (socket) {
     io.sockets.emit('setquestion', data);
     time = (question.time);
   });
-
+socket.on('setquestionscore',function(data){
+    question.score = data;
+    io.sockets.emit('setquestion', data);
+    console.log(question.section+"score was set to "+ data);
+});
 
   //team
 
@@ -396,7 +400,7 @@ io.on('connection', function (socket) {
   socket.on('setscorefactor', function (data) {
     table[table.findindexbyabbr(data.name)].positivefactor = data.positive;
     table[table.findindexbyabbr(data.name)].negativefactor = data.negative;
-    console.log(data);
+    console.log(data);w
     console.log(table[table.findindexbyabbr(data.name)]);
     io.sockets.emit('setscorefactor', data);
   });
@@ -409,12 +413,12 @@ io.on('connection', function (socket) {
     var sum;
     if (data.score > 0) {
       console.log("positivefactor: " + table[index].positivefactor);
-      sum = parseInt(table[index].score) + (data.score * parseInt(table[index].positivefactor));
+      sum = parseInt(table[index].score) + (parseInt(data.score) * parseInt(table[index].positivefactor));
       console.log(data.score);
       console.log(sum);
     }
     else {
-      sum = parseFloat(table[index].score) + (data.score * parseFloat(table[index].negativefactor));
+      sum = parseFloat(table[index].score) + (parseInt(data.score) * parseFloat(table[index].negativefactor));
     }
     //resuscitation
     if (CurrentRound == "resuscitation" && sum <= 0) {
@@ -542,6 +546,14 @@ Array.prototype.findabbrbybtn = function (number) {
   for (i = 0; i < this.length; i++) {
     //   console.log(this[i].abbr);
     if (this[i].buttonnumber == number) { return this[i].abbr; }
+  }
+};
+
+Array.prototype.findbtnbyabbr = function (number) {
+  var i;
+  for (i = 0; i < this.length; i++) {
+    //   console.log(this[i].abbr);
+    if (this[i].buttonnumber == number) { return i; }
   }
 };
 Array.prototype.sortBy = function (p) {
