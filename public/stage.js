@@ -23,7 +23,7 @@ function openanswer()
       document.getElementById("text").innerHTML = question.answer;
       document.getElementById("body").style.backgroundColor = "white";
 }
-function select()
+function select(socket)
 {
         var select = document.getElementById("teamselection");
         var name = select.options[select.selectedIndex].text;
@@ -31,7 +31,8 @@ function select()
        document.getElementById("teamselectionmenu").style.visibility = "hidden";
        document.getElementById("teamname").innerHTML = team;
        document.getElementById("score").innerHTML = "Score: "+table[table.findindexbyabbr(name)].score;
-   
+
+       introduce(socket, "stage-" + name);
 }
 
 function setdropdown()

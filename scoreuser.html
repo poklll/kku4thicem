@@ -20,6 +20,7 @@
   <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
   <link rel="stylesheet" href="/public/animate.css">
   <script src="/public/scoreuser.js"></script>
+  <script src="/public/helper.js"></script>
   <script src='/socket.io/socket.io.js'></script>
 
   <script>
@@ -31,7 +32,7 @@
     //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
     socket.on('scorechange', function (data) { setscore(data.name, data.score); table = data.datatable; });
     socket.on('setscorefactor', function (data) { factoreffect(data); });
-
+    introduce(socket, "user");
   </script>
 </head>
 

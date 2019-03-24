@@ -19,6 +19,7 @@
   <script src='/socket.io/socket.io.js'></script>
   <script src="public/html2canvas.min.js"></script>
   <script src="public/stage.js"></script>
+  <script src="/public/helper.js"></script>
   <link rel="stylesheet" type="text/css" href="public/stage.css">
   <link rel="stylesheet" href="public/animate.css">
   <script>
@@ -70,7 +71,7 @@
               <p>Select Team</p>
               <select id="teamselection">
               </select>
-              <button class="btn btn-success" onclick="select()">Select</button>
+              <button class="btn btn-success" onclick="select(socket)">Select</button>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const omit = require('object.omit');
 const app = express();
 const router = express.Router();
 var http = require('http').Server(app);
@@ -62,10 +63,6 @@ var defaultpositivefactor = 1;
 var defaultnegativefactor = 1;
 var Round = []; //name,rule
 var CurrentRound;
-
-
-
-
 
 //Init data
 const fs = require('fs');
@@ -287,11 +284,124 @@ questions = semifinalquestion;
 
 
 //Socket
-
+var clientEntries = [];
+var nextSocketId = 0;
+var AsyncLock = new require('async-lock');
+var lock = new AsyncLock();
 io.on('connection', function (socket) {
 
-  console.log("client is connected");
+  //console.log("client is connected");
 
+  socket.once("introduce", function(intro) {
+    console.log("client '" + intro + "' connected");
+      lock.acquire("socketIntroduction", () => {
+        var entry = {
+          socket: socket, 
+          id: nextSocketId++, 
+          introduction: intro, 
+          ip: socket.handshake.address,
+          pingTime: null,
+          disconnected: false,
+          warning: false,
+        };
+        clientEntries.forEach(x => {
+          if(x.introduction == "admin")
+          {
+            x.socket.emit("showNewClient", omit(entry, 'socket'));
+          }
+        });
+        clientEntries.push(entry);
+  
+        if(intro == "admin")
+        {
+          clientEntries.forEach(x => {
+            socket.emit("showNewClient", omit(x, 'socket'));
+            if(x.disconnected) socket.emit("grayoutClient", x.id);
+            else if(x.warning) socket.emit("warningClient", x.id, true);
+          });
+        }
+        
+        entry.pingTime = Date.now();
+        socket.emit('manual-ping');
+        var intervalId = setInterval(() => {
+          if(entry.disconnected) 
+          {
+            clearInterval(intervalId);
+          }
+          else if(entry.pingTime != -1 && Date.now() - entry.pingTime > 1000)
+          {
+            entry.warning = true;
+            clientEntries.forEach(x => {
+              if(x.introduction == "admin")
+              {
+                x.socket.emit("warningClient", entry.id, true);
+              }
+            });
+          }
+        }, 1000);
+      });
+    });
+
+  socket.on('disconnect', () => {
+    lock.acquire("socketIntroduction", () =>
+    {
+    var index = clientEntries.findIndex(x => x.socket == socket);
+    if(index == -1) return;
+    console.log("client '" + clientEntries[index].introduction + "' disconnected");
+    clientEntries[index].disconnected = true;
+    clientEntries.forEach(x => {
+      if(x.introduction == "admin")
+      {
+        x.socket.emit("grayoutClient", clientEntries[index].id);
+      }
+    });
+    setTimeout(() => {
+      lock.acquire("socketIntroduction", () =>
+      {
+        var index = clientEntries.findIndex(x => x.socket == socket);
+        clientEntries.forEach(x => {
+          if(index == -1)
+          {
+            return;
+          }
+          if(x.introduction == "admin")
+          {
+            x.socket.emit("removeClient", clientEntries[index].id);
+          }
+        });
+        clientEntries.splice(index, 1);
+      });
+    }, 60000);
+  });
+  });
+  socket.on('manual-pong', () => {
+    var index = clientEntries.findIndex(x => x.socket == socket);
+    if(index == -1 || clientEntries[index].disconnected) return;
+    var latency = Date.now() - clientEntries[index].pingTime;
+    if(clientEntries[index].warning)
+    {
+      clientEntries[index].warning = false;
+      clientEntries.forEach(x => {
+        if(x.introduction == "admin")
+        {
+          x.socket.emit("warningClient", clientEntries[index].id, false);
+        }
+      });
+    }
+    clientEntries[index].pingTime = -1;
+    setTimeout(() =>{
+      var index = clientEntries.findIndex(x => x.socket == socket);
+      if(index == -1 || clientEntries[index].disconnected) return;
+      clientEntries[index].pingTime = Date.now();
+      socket.emit('manual-ping');
+    }, 2000);
+    clientEntries.forEach(x => {
+      if(x.introduction == "admin")
+      {
+        x.socket.emit("updateClientLatency", clientEntries[index].id, latency);
+      }
+    });
+  });
 
   //init
 
@@ -424,7 +534,7 @@ socket.on('setquestionscore',function(data){
     if (CurrentRound == "resuscitation" && sum <= 0) {
       io.sockets.emit('blackout', data.name);
       table.splice(table.findindexbyabbr(data.name), 1);
-      io.sockets.emit('init', { table: table, questions: questions });
+      io.sockets.emit('init', { table: table, questions: questions,  });
     }
     else {
       var previousposition = index;

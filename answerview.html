@@ -19,6 +19,7 @@
     <script src='/socket.io/socket.io.js'></script>
     <script src="public/html2canvas.min.js"></script>
     <script src="public/answerview.js"></script>
+    <script src="/public/helper.js"></script>
     <link rel="stylesheet" type="text/css" href="public/answerview.css">
     <link rel="stylesheet" href="public/animate.css">
     <script>
@@ -39,7 +40,7 @@
              document.getElementById('toggletimer').innerHTML = "start timer";
         });
       
-    
+        introduce(socket, "committee");
     </script>
 </head>
 

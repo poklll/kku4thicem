@@ -94,8 +94,8 @@ function select() {
   document.getElementById("teamselectionmenu").style.visibility = "hidden";
   document.getElementById("name").innerHTML = team;
   score = table[table.findindexbyabbr(team)].score;
-  setscore(team);
-
+  //setscore(team);
+  introduce(socket, "canver-" + name);
 }
 
 function selectleader(level) {

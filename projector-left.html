@@ -20,6 +20,7 @@
     <script src="public/html2canvas.min.js"></script>
     <script src="public/projector.js"></script>
     <script src='/socket.io/socket.io.js'></script>
+    <script src="/public/helper.js"></script>
   
     <link rel="stylesheet" type="text/css" href="public/projector.css">
     <link rel="stylesheet" href="public/animate.css">
@@ -41,7 +42,7 @@
             document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="red";
         });
       
-    
+        introduce(socket, "proj-left");
     </script>
 </head>
 
