@@ -292,8 +292,10 @@ io.on('connection', function (socket) {
 
   //console.log("client is connected");
 
-  socket.once("introduce", function(intro) {
+  socket.on("introduce", function(intro) {
     console.log("client '" + intro + "' connected");
+      var index = clientEntries.findIndex(x => x.socket == socket);
+      if(index != -1 && !clientEntries[index].disconnected) return;
       lock.acquire("socketIntroduction", () => {
         var entry = {
           socket: socket, 
