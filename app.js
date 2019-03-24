@@ -330,8 +330,9 @@ io.on('connection', function (socket) {
           {
             clearInterval(intervalId);
           }
-          else if(entry.pingTime != -1 && Date.now() - entry.pingTime > 1000)
+          else if(entry.pingTime != -1 && Date.now() - entry.pingTime > 1000 && !entry.warning)
           {
+            console.log("client '" + entry.introduction + "' not responding");
             entry.warning = true;
             clientEntries.forEach(x => {
               if(x.introduction == "admin")
@@ -377,11 +378,14 @@ io.on('connection', function (socket) {
   });
   });
   socket.on('manual-pong', () => {
+    lock.acquire("socketIntroduction", () =>
+    {
     var index = clientEntries.findIndex(x => x.socket == socket);
-    if(index == -1 || clientEntries[index].disconnected) return;
+    if(index == -1 || clientEntries[index].disconnected || clientEntries[index].pingTime == -1) return;
     var latency = Date.now() - clientEntries[index].pingTime;
     if(clientEntries[index].warning)
     {
+      console.log("client '" + clientEntries[index].introduction + "' resume responding");
       clientEntries[index].warning = false;
       clientEntries.forEach(x => {
         if(x.introduction == "admin")
@@ -403,6 +407,7 @@ io.on('connection', function (socket) {
         x.socket.emit("updateClientLatency", clientEntries[index].id, latency);
       }
     });
+  });
   });
 
   //init
