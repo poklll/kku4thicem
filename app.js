@@ -262,17 +262,31 @@ function readsheet(auth) {
 //Timer
 var time = 0;
 var timerOn = false;
+var tickFeedbackImmediateCount = 0;
+var tickFeedbackDelayCount = 0;
+var tickMissing = 0;
+var firstTick = true;
+var teamCount = 9;
 var count = function () {
   if (timerOn) {
     if (time > 0) {
       time--;
-      io.sockets.emit('tick', Math.floor(time / 60) + "." + (time % 60).pad(2));
+      if(!firstTick) tickMissing += teamCount - tickFeedbackImmediateCount - tickFeedbackDelayCount;
+      console.log("Tick! [" + time + "] (on-time: " + tickFeedbackImmediateCount + ", delay: " + tickFeedbackDelayCount + ", missing: " + tickMissing + ")");
+      tickFeedbackImmediateCount = 0;
+      tickFeedbackDelayCount = 0;
+      io.sockets.emit('tick', time);
+      firstTick = false;
     }
     else {
       timerOn = false;
       io.sockets.emit('screenshot', true);
       io.sockets.emit('clearcanvas', true);
       io.sockets.emit('timeup',true);
+      tickFeedbackImmediateCount = 0;
+      tickFeedbackDelayCount = 0;
+      tickMissing = 0;
+      firstTick = true;
     }
   }
 }
@@ -288,6 +302,23 @@ var clientEntries = [];
 var nextSocketId = 0;
 var AsyncLock = new require('async-lock');
 var lock = new AsyncLock();
+
+// Override console.log
+var originConsoleLog = console.log;
+console.log = function(data) {
+  lock.acquire("socketIntroduction", () => {
+    var d = new Date();
+    var ds = "[" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds().toString().padStart(2, '0') + "] ";
+    clientEntries.forEach(x => {
+      if(x.introduction == "admin" || x.introduction == "committee")
+      {
+        x.socket.emit("addConsoleText", ds + data);
+      }
+    });
+    originConsoleLog(ds + data);
+  });
+};
+
 io.on('connection', function (socket) {
 
   //console.log("client is connected");
@@ -348,70 +379,96 @@ io.on('connection', function (socket) {
   socket.on('disconnect', () => {
     lock.acquire("socketIntroduction", () =>
     {
-    var index = clientEntries.findIndex(x => x.socket == socket);
-    if(index == -1) return;
-    console.log("client '" + clientEntries[index].introduction + "' disconnected");
-    clientEntries[index].disconnected = true;
-    clientEntries.forEach(x => {
-      if(x.introduction == "admin")
-      {
-        x.socket.emit("grayoutClient", clientEntries[index].id);
-      }
-    });
-    setTimeout(() => {
-      lock.acquire("socketIntroduction", () =>
-      {
-        var index = clientEntries.findIndex(x => x.socket == socket);
-        clientEntries.forEach(x => {
-          if(index == -1)
-          {
-            return;
-          }
-          if(x.introduction == "admin")
-          {
-            x.socket.emit("removeClient", clientEntries[index].id);
-          }
-        });
-        clientEntries.splice(index, 1);
-      });
-    }, 60000);
-  });
-  });
-  socket.on('manual-pong', () => {
-    lock.acquire("socketIntroduction", () =>
-    {
-    var index = clientEntries.findIndex(x => x.socket == socket);
-    if(index == -1 || clientEntries[index].disconnected || clientEntries[index].pingTime == -1) return;
-    var latency = Date.now() - clientEntries[index].pingTime;
-    if(clientEntries[index].warning)
-    {
-      console.log("client '" + clientEntries[index].introduction + "' resume responding");
-      clientEntries[index].warning = false;
+      var index = clientEntries.findIndex(x => x.socket == socket);
+      if(index == -1) return;
+      console.log("client '" + clientEntries[index].introduction + "' disconnected");
+      clientEntries[index].disconnected = true;
       clientEntries.forEach(x => {
         if(x.introduction == "admin")
         {
-          x.socket.emit("warningClient", clientEntries[index].id, false);
+          x.socket.emit("grayoutClient", clientEntries[index].id);
         }
       });
-    }
-    clientEntries[index].pingTime = -1;
-    setTimeout(() =>{
-      var index = clientEntries.findIndex(x => x.socket == socket);
-      if(index == -1 || clientEntries[index].disconnected) return;
-      clientEntries[index].pingTime = Date.now();
-      socket.emit('manual-ping');
-    }, 2000);
-    clientEntries.forEach(x => {
-      if(x.introduction == "admin")
-      {
-        x.socket.emit("updateClientLatency", clientEntries[index].id, latency);
-      }
+      setTimeout(() => {
+        lock.acquire("socketIntroduction", () =>
+        {
+          var index = clientEntries.findIndex(x => x.socket == socket);
+          clientEntries.forEach(x => {
+            if(index == -1)
+            {
+              return;
+            }
+            if(x.introduction == "admin")
+            {
+              x.socket.emit("removeClient", clientEntries[index].id);
+            }
+          });
+          clientEntries.splice(index, 1);
+        });
+      }, 60000);
     });
   });
+
+  socket.on('manual-pong', () => {
+    lock.acquire("socketIntroduction", () =>
+    {
+      var index = clientEntries.findIndex(x => x.socket == socket);
+      if(index == -1 || clientEntries[index].disconnected || clientEntries[index].pingTime == -1) return;
+      var latency = Date.now() - clientEntries[index].pingTime;
+      if(clientEntries[index].warning)
+      {
+        console.log("client '" + clientEntries[index].introduction + "' resume responding");
+        clientEntries[index].warning = false;
+        clientEntries.forEach(x => {
+          if(x.introduction == "admin")
+          {
+            x.socket.emit("warningClient", clientEntries[index].id, false);
+          }
+        });
+      }
+      clientEntries[index].pingTime = -1;
+      setTimeout(() =>{
+        var index = clientEntries.findIndex(x => x.socket == socket);
+        if(index == -1 || clientEntries[index].disconnected) return;
+        clientEntries[index].pingTime = Date.now();
+        socket.emit('manual-ping');
+      }, 2000);
+      clientEntries.forEach(x => {
+        if(x.introduction == "admin")
+        {
+          x.socket.emit("updateClientLatency", clientEntries[index].id, latency);
+        }
+      });
+    });
+  });
+
+  socket.on("feedback", (data) => {
+    if(data.error == null)
+    {
+      if(data.event == "tick")
+      {
+         if(data.tick == time)
+        {
+           tickFeedbackImmediateCount++;
+        }
+        else
+        {
+          tickFeedbackDelayCount++;
+        }
+        console.log(data.client + ": " + data.event + " success [" + data.tick + "]");
+      }
+      else
+      {
+        console.log(data.client + ": " + data.event + " success");
+      }
+    }
+    else
+    {
+      console.log(data.client + ": " + data.event + " error: " + data.error);
+    }
   });
 
   //init
-
   socket.emit('init', { table: table, questions: questions });
   socket.emit('setteamlist', table);
   //io.sockets.emit('setquestion', question);
@@ -554,7 +611,7 @@ socket.on('setquestionscore',function(data){
       //console.log(table);
       var newposition = table.findindexbyabbr(data.name);
       console.log(sum + " score was added to " + data.name);
-      console.log("positionchage from: " + previousposition + " to " + newposition);
+      console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
       io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
       io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
     }
@@ -577,9 +634,9 @@ socket.on('setquestionscore',function(data){
   socket.on('sirenOff', function (data) { socket.broadcast.emit('turnOffSiren', data) });
   socket.on('buttonOn', function (data) { socket.broadcast.emit('enableButton', data) });
   socket.on('buttonOff', function (data) { socket.broadcast.emit('disableButton', data) });
-  socket.on('LEDOn', function (data) { socket.broadcast.emit('turnOnLedStrip', (data[0] + "," + data[1])); console.log(data); });
-  socket.on('LEDOff', function (data) { socket.broadcast.emit('turnOffLedStrip', parseInt(data)); console.log(data); });
-  socket.on('ForceLEDOff', function (data) { socket.broadcast.emit('forceTurnOffLedStrip', data); console.log(data); });
+  socket.on('LEDOn', function (data) { socket.broadcast.emit('turnOnLedStrip', (data[0] + "," + data[1])); });
+  socket.on('LEDOff', function (data) { socket.broadcast.emit('turnOffLedStrip', parseInt(data)); });
+  socket.on('ForceLEDOff', function (data) { socket.broadcast.emit('forceTurnOffLedStrip', data); });
 
   socket.on('ping', () => {
     console.log("ping"+socket.id);

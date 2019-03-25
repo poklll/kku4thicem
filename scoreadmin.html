@@ -27,6 +27,7 @@
   crossorigin="anonymous"></script>
 
   <script>
+    var pauseConsole = false;
     var socket = io();
     socket.on('positionchange', function (data) { change(data.from, data.to) });
     socket.on('delete', function (data) { deleterow(data) });
@@ -62,6 +63,11 @@
     socket.on("updateClientLatency", (id, latency) => {
       $("tr#client-table-row-" + id + " .latency").html(latency);
     })
+    socket.on("addConsoleText", (text) => {
+      if(pauseConsole) return;
+      $("#feedback-console").append(text + "<br>");
+      $("#feedback-console").scrollTop($("#feedback-console")[0].scrollHeight);
+    });
   </script>
 </head>
 
@@ -171,28 +177,32 @@
       <span class="sr-only">Next</span>
     </a>
   </div>
-
-
-  <div class="scoreview">
-
-    <table class="table table-hover" id="scoretable">
-      <thead>
-        <tr>
-          <th scope="col">Rank</th>
-          <th scope="col">Name</th>
-          <th scope="col">Score</th>
-        </tr>
-      </thead>
-      <tbody id="tablepanel">
-
-      </tbody>
-    </table>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="scoreview">
+        <table class="table table-hover" id="scoretable">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">Name</th>
+              <th scope="col">Score</th>
+            </tr>
+          </thead>
+          <tbody id="tablepanel">
+    
+          </tbody>
+        </table>
+      </div>
   </div>
-
-
-
-
-
+  <div class="row" style="height: 400px; background-color:black; color:white; padding:10px; overflow-y: scroll;" id="feedback-console">
+    
+  </div>
+  <div class="row" style="background-color:black;">
+    <button type="button" id="btn-pause-console" class="btn btn-warning" 
+      onclick="pauseConsole = !pauseConsole; $('#btn-pause-console').text(pauseConsole ? 'Resume' : 'Pause');">Pause</button>
+    <button type="button" class="btn btn-danger" onclick="$('#feedback-console').html('')">Clear</button>
+  </div>
+</div>
 </body>
 
 </html>

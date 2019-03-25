@@ -26,19 +26,19 @@
     <link rel="stylesheet" href="public/animate.css">
     <script>
         var socket = io();
-        socket.on('addimage', function (data) { addimage(data); });
-        socket.on('init', function (data) { table = data.table; questions = data.questions; init(); });
-        socket.on('setquestion', function (data) {
-        question = data;
-        resetpanel();
-        judge = table.length;
-    });
-        socket.on('round',function(data){roundsetup(data);});
-        socket.on('correct',function(data){
+        onEx(socket, 'addimage', function (data) { addimage(data); });
+        onEx(socket, 'init', function (data) { table = data.table; questions = data.questions; init(); });
+        onEx(socket, 'setquestion', function (data) {
+            question = data;
+            resetpanel();
+            judge = table.length;
+        });
+        onEx(socket, 'round',function(data){roundsetup(data);});
+        onEx(socket, 'correct',function(data){
             
             document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="green";
         });
-        socket.on('wrong',function(data){
+        onEx(socket, 'wrong',function(data){
             document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="red";
         });
       

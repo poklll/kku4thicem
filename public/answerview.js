@@ -48,8 +48,6 @@ function roundsetup(round)
      {
         document.getElementById("thefast").style.visibility = "hidden";
      }
-     
-
 }
 
 function setscore(team,score)
@@ -211,7 +209,7 @@ function correct(teamnumber)
 function wrong(teamnumber)
 {
     document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="red";
-    document.getElementById("status"+teamnumber).style.backgroundColor ="red";
+    //document.getElementById("status"+teamnumber).style.backgroundColor ="red";
     var name = document.getElementById("team"+teamnumber+"label").innerHTML;
     var score = 0-parseInt(question.score);
     setscore(name,score);
