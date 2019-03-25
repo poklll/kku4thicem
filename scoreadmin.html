@@ -21,6 +21,10 @@
   <link rel="stylesheet" href="/public/animate.css">
   <script src="/public/scoreadmin.js"></script>
   <script src='/socket.io/socket.io.js'></script>
+  <script src="/public/helper.js"></script>
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
 
   <script>
     var socket = io();
@@ -30,6 +34,34 @@
     socket.on('reset', function (data) { cleartable(); });
     //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
     socket.on('scorechange', function (data) { setscore(data.name, data.score); table = data.datatable; });
+    // client tracking code!!
+    introduce(socket, "admin");
+
+    var newClientCounter = 1;
+    socket.on("showNewClient", (entry) => {
+      $("#clients-table tbody").append(
+        "<tr id='client-table-row-" + entry.id + "'>" +
+            "<td>" + newClientCounter++ + "</td>" +
+            "<td>" + entry.introduction + "</td>" +
+            "<td>" + entry.ip + "</td>" +
+            "<td class='latency'>-</td>" +
+        "</tr>"
+      );
+    });
+    socket.on("grayoutClient", (id) => {
+      $("tr#client-table-row-" + id).css('color', 'grey');
+      $("tr#client-table-row-" + id + " .latency").html("X");
+    });
+    socket.on("warningClient", (id, x) => {
+      $("tr#client-table-row-" + id).css('color', x ? 'red' : 'black');
+      $("tr#client-table-row-" + id + " .latency").html(x ? "NR" : "-");
+    });
+    socket.on("removeClient", (id) => {
+      $("tr#client-table-row-" + id).remove();
+    })
+    socket.on("updateClientLatency", (id, latency) => {
+      $("tr#client-table-row-" + id + " .latency").html(latency);
+    })
   </script>
 </head>
 
@@ -61,8 +93,22 @@
               <button class="btn btn-primary" onclick="addscore()">+</button>
               <button class="btn btn-danger" onclick="reducescore()">-</button>
             </div>
-
           </div>
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="form-group">
+          <p>Clients</p>
+          <div class="table-responsive" style="overflow-y: scroll; height: 60vh;">
+          <table class="table" id="clients-table">
+            <tr>
+              <th>#</th>
+              <th>Clients</th>
+              <th>IP</th>
+              <th>Latency</th>
+            </tr>
+          </table>
+        </div>
         </div>
       </div>
       <div class="carousel-item">

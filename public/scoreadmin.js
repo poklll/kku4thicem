@@ -4,8 +4,7 @@ var question = {};
 var edited = true;
 var timer = false;
 
-
-    function init()
+function init()
 {   var i;
     cleartable();
     for (i = 0; i < table.length; i++) 
@@ -16,6 +15,7 @@ var timer = false;
      setdropdown();
      setqeustionlist();
 }
+
   function addrow(rank,name,score)
     {     
         var tablepanel = document.getElementById("tablepanel");
