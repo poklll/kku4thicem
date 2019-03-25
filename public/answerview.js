@@ -5,6 +5,7 @@ var timer = false;
 var question = {};
 var judge;
 var currentround;
+var button = false;
 function addimage(data)
 {   var index = table.findindexbyabbr(data.name);
     if(currentround != "final:the fast")
@@ -211,12 +212,12 @@ function correct(teamnumber)
 function wrong(teamnumber)
 {
     document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="red";
-    document.getElementById("status"+teamnumber).style.backgroundColor ="red";
+    //document.getElementById("status"+teamnumber).style.backgroundColor ="red";
     var name = document.getElementById("team"+teamnumber+"label").innerHTML;
     var score = 0-parseInt(question.score);
     setscore(name,score);
     socket.emit('wrong',name);
-    socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"green"]);
+    socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"red"]);
     judge--;
     iscomplete();
 }
@@ -247,6 +248,31 @@ function resetpanel()
     }
     //socket.emit('screenshot',true);
 }
+
+
+function enablebutton()
+    {
+        var ebutton = document.getElementById("enableButton");
+    
+        if(button)
+            {   
+                socket.emit('buttonOff',true);
+                ebutton.innerHTML = "Button disabled";
+                ebutton.className = "btn btn-secondary";
+                button = false;
+            }
+        else
+            {
+                 socket.emit('buttonOn',true);
+                 ebutton.innerHTML = "Button enabled";
+               ebutton.className = "btn btn-info";
+                button =true;
+            }
+         
+    
+    }
+
+
 
 Array.prototype.findindexbysection = function(name)
 {

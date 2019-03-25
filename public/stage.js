@@ -31,6 +31,7 @@ function select()
        document.getElementById("teamselectionmenu").style.visibility = "hidden";
        document.getElementById("teamname").innerHTML = team;
        document.getElementById("score").innerHTML = "Score: "+table[table.findindexbyabbr(name)].score;
+       socket.emit('link',team+" stage");
    
 }
 

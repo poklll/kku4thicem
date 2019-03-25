@@ -33,8 +33,16 @@
 
   <script>
     var socket = io();
+    socket.on('init', (data) => {
+      table = data.table, currentround = data.round;
+      roundsetup(currentround);
+      if(team)
+      {
+        score = table[table.findindexbyabbr(team)].score;
+      }
+    })
     socket.on('screenshot', function () { screenshot(); });
-    socket.on('setteamlist', function (data) { table = data; setdropdown();  });
+    socket.on('setteamlist', function (data) { table = data; setdropdown(); });
     socket.on('clearcanvas', function () { resetcanvas() });
     socket.on('blackout', function (data) { if (team == data) { blackout(); } });
     socket.on('setquestion', function (data) {
@@ -53,7 +61,7 @@
     socket.on('hitsetscore', function (data) {
       setscore(data);
     });
-   
+
   </script>
 </head>
 

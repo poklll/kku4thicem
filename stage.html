@@ -24,6 +24,7 @@
   <script>
     var socket = io();
     var question = {};
+    
     socket.on('tick', function (data) { document.getElementById("clock").innerHTML = data; });
     socket.on('setteamlist', function (data) { table = data; setdropdown(); });
     socket.on('setquestion', function (data) {
@@ -38,10 +39,14 @@
         if (data.level == undefined) {
           questioninfo = "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
         }
-        else {
-          questioninfo = "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
+        else
+          if (data.score == undefined) {
+            questioninfo = "Level: " + data.level + "<br>" + "Time: " + tomin(data.time) + " min";
+          }
+          else {
+            questioninfo = "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
 
-        }
+          }
       document.getElementById("question-info-text").innerHTML = questioninfo;
       question = data;
       document.getElementById("head").innerHTML = currentround + " " + data.section;
@@ -56,6 +61,10 @@
     socket.on('correct', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "green"; } });
     socket.on('wrong', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "crimson"; } });
     socket.on('blackout', function (data) { if (team == data) { blackout(); } });
+    socket.on('setquestionscore', function (data) {
+      document.getElementById("question-info-text").innerHTML += "<br>Score: "+data;
+
+    });
   </script>
 </head>
 

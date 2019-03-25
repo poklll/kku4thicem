@@ -42,10 +42,10 @@ router.get('/projector-right', function (req, res) {
 app.use('/', router);
 
 //if (process.env.NODE_ENV === 'production') {
- // app.use(express.static('client/build'));
+// app.use(express.static('client/build'));
 //}
 //app.get('*', (request, response) => {
- // response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+// response.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 //});
 
 var io = require('socket.io')(http);
@@ -62,6 +62,8 @@ var defaultpositivefactor = 1;
 var defaultnegativefactor = 1;
 var Round = []; //name,rule
 var CurrentRound;
+var Currentteam;
+var socketID = [];
 
 
 
@@ -166,13 +168,13 @@ function readsheet(auth) {
   });
   sheets.spreadsheets.values.get({
     spreadsheetId: '15QDjlyUu5dF5xIJLU7-9Dz5PL4cD1HKNsOEQYijNbnI',
-    range: 'Resusitation!A2:G',
+    range: 'Resusitation!A2:F',
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err);
     const rows = res.data.values;
     if (rows.length) {
       rows.map((row) => {
-        resuscitationquestion.push({ section: row[0], question: row[1], answer: row[2], score: row[3], time: row[4], img: row[5], level: row[6] });
+        resuscitationquestion.push({ section: row[0], question: row[1], answer: row[2], time: row[3], img: row[4], level: row[5] });
       });
 
     } else {
@@ -275,7 +277,7 @@ var count = function () {
       timerOn = false;
       io.sockets.emit('screenshot', true);
       io.sockets.emit('clearcanvas', true);
-      io.sockets.emit('timeup',true);
+      io.sockets.emit('timeup', true);
     }
   }
 }
@@ -289,13 +291,18 @@ questions = semifinalquestion;
 //Socket
 
 io.on('connection', function (socket) {
+  
+  socket.on('link',function(name){
+       socketID.push({name:name,id:socket.id});
+       console.log(socketID[socketID.length-1].name + " is connected");
+  });
 
-  console.log("client is connected");
-
-
+  socket.on('disconnect', function () {
+      console.log(socketID.findsocketbyID(socket.id)+" was disconnected");
+  });
   //init
 
-  socket.emit('init', { table: table, questions: questions });
+  socket.emit('init', { table: table, questions: questions, question: question, round: CurrentRound });
   socket.emit('setteamlist', table);
   //io.sockets.emit('setquestion', question);
   io.sockets.emit('setround', Round);
@@ -316,10 +323,10 @@ io.on('connection', function (socket) {
   }
   );
   socket.on('resetcanvas', function () { io.sockets.emit('clearcanvas', true); });
-
-
+ 
+ 
+ 
   //timer
-
   socket.on('settime', function (data) { time = data; });
   socket.on('timerOn', function (data) { timerOn = data; });
 
@@ -375,11 +382,11 @@ io.on('connection', function (socket) {
     io.sockets.emit('setquestion', data);
     time = (question.time);
   });
-socket.on('setquestionscore',function(data){
+  socket.on('setquestionscore', function (data) {
     question.score = data;
     io.sockets.emit('setquestion', data);
-    console.log(question.section+"score was set to "+ data);
-});
+    console.log(question.section + "score was set to " + data);
+  });
 
   //team
 
@@ -448,11 +455,10 @@ socket.on('setquestionscore',function(data){
 
   socket.on('buttonHit', function (data) {
     console.log("button " + data + "was hit!");
-    if(CurrentRound == "resuscitation")
-    {
+    if (CurrentRound == "resuscitation") {
       var name = table.findabbrbybtn(data);
-      io.sockets.emit('hitsetscore',name);
-      
+      io.sockets.emit('hitsetscore', name);
+
     }
   })
   socket.on('success', function (data) { console.log(data) });
@@ -464,12 +470,7 @@ socket.on('setquestionscore',function(data){
   socket.on('LEDOff', function (data) { socket.broadcast.emit('turnOffLedStrip', parseInt(data)); console.log(data); });
   socket.on('ForceLEDOff', function (data) { socket.broadcast.emit('forceTurnOffLedStrip', data); console.log(data); });
 
-  socket.on('ping', () => {
-    console.log("ping"+socket.id);
-  });
-  socket.on('pong', () => {
-    console.log("pong"+socket.id);
-  });
+
 });
 
 function reload() {
@@ -541,7 +542,6 @@ Number.prototype.pad = function (size) {
 Array.prototype.findindexbyabbr = function (name) {
   var i;
   for (i = 0; i < this.length; i++) {
-    //   console.log(this[i].abbr);
     if (this[i].abbr == name) { return i; }
   }
 };
@@ -549,11 +549,16 @@ Array.prototype.findindexbyabbr = function (name) {
 Array.prototype.findabbrbybtn = function (number) {
   var i;
   for (i = 0; i < this.length; i++) {
-    //   console.log(this[i].abbr);
     if (this[i].buttonnumber == number) { return this[i].abbr; }
   }
 };
 
+Array.prototype.findsocketbyID = function(id) {
+  var i;
+  for (i = 0; i < this.length; i++) {
+    if (this[i].id == id) { return this[i].name; }
+  }
+};
 Array.prototype.findbtnbyabbr = function (number) {
   var i;
   for (i = 0; i < this.length; i++) {
@@ -572,4 +577,4 @@ var server = http.listen((process.env.PORT || 5000), () => {
   console.log('server is running on port', server.address().port);
 });
 
-process.on('uncaughtException', (e) => {console.log(e);});
+process.on('uncaughtException', (e) => { console.log(e); });
