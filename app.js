@@ -308,7 +308,7 @@ var originConsoleLog = console.log;
 console.log = function(data) {
   lock.acquire("socketIntroduction", () => {
     var d = new Date();
-    var ds = "[" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds().toString().padStart(2, '0') + "] ";
+    var ds = "[" + d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0') + ":" + d.getSeconds().toString().padStart(2, '0') + "] ";
     clientEntries.forEach(x => {
       if(x.introduction == "admin" || x.introduction == "committee")
       {
