@@ -38,16 +38,24 @@
     // client tracking code!!
     introduce(socket, "admin");
 
-    var newClientCounter = 1;
     socket.on("showNewClient", (entry) => {
-      $("#clients-table tbody").append(
-        "<tr id='client-table-row-" + entry.id + "'>" +
-            "<td>" + newClientCounter++ + "</td>" +
-            "<td>" + entry.introduction + "</td>" +
-            "<td>" + entry.ip + "</td>" +
-            "<td class='latency'>-</td>" +
-        "</tr>"
-      );
+      if($("tr#client-table-row-" + entry.id).length > 0)
+      {
+        $("tr#client-table-row-" + entry.id).css('color', 'black');
+        $("tr#client-table-row-" + entry.id + " .latency").html("-");
+      }
+      else
+      {
+        $("#clients-table tbody").append(
+          "<tr id='client-table-row-" + entry.id + "'>" +
+              "<td class='order'></td>" +
+              "<td>" + entry.introduction + "</td>" +
+              "<td>" + entry.ip + "</td>" +
+              "<td class='latency'>-</td>" +
+          "</tr>"
+        );
+        updateClientOrderNum();
+      }
     });
     socket.on("grayoutClient", (id) => {
       $("tr#client-table-row-" + id).css('color', 'grey');
@@ -59,6 +67,7 @@
     });
     socket.on("removeClient", (id) => {
       $("tr#client-table-row-" + id).remove();
+      updateClientOrderNum();
     })
     socket.on("updateClientLatency", (id, latency) => {
       $("tr#client-table-row-" + id + " .latency").html(latency);
@@ -68,6 +77,11 @@
       $("#feedback-console").append(text + "<br>");
       $("#feedback-console").scrollTop($("#feedback-console")[0].scrollHeight);
     });
+
+    function updateClientOrderNum()
+    {
+      $("#clients-table .order").each((i, e) => $(e).html(i + 1));
+    }
   </script>
 </head>
 
@@ -136,8 +150,10 @@
             <option value="alarm">Alarm</option>
             <option value="redblink">Redblink</option>
             <option value="blueblink">Blueblink</option>
+            <option value="greenblink">GreenBlink</option>
             <option value="red">Red</option>
             <option value="blue">Blue</option>
+            <option value="green">Green</option>
           </select>
           <div class="buttonpanel" id="LEDpanel">
             <button id="LEDon" class="btn btn-success" onclick="LEDon()">turn on LED</button>

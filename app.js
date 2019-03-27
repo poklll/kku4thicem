@@ -325,18 +325,32 @@ io.on('connection', function (socket) {
 
   socket.on("introduce", function(intro) {
       lock.acquire("socketIntroduction", () => {
-        console.log("client '" + intro + "' connected");
         var index = clientEntries.findIndex(x => x.socket == socket);
-        if(index != -1 && !clientEntries[index].disconnected) return;
-        var entry = {
-          socket: socket, 
-          id: nextSocketId++, 
-          introduction: intro, 
-          ip: socket.handshake.address,
-          pingTime: null,
-          disconnected: false,
-          warning: false,
-        };
+        if(index != -1) return;
+        index = clientEntries.findIndex(x => 
+          x.ip == socket.handshake.address && x.introduction == intro && x.disconnected);
+        var entry = null;
+        if(index != -1)
+        {
+          console.log("client '" + intro + "' reconnected");
+          entry = clientEntries[index];
+          clientEntries.splice(index, 1);
+          entry.socket = socket;
+          entry.disconnected = false;
+        }
+        else
+        {
+          console.log("client '" + intro + "' connected");
+          entry = {
+            socket: socket, 
+            id: nextSocketId++, 
+            introduction: intro, 
+            ip: socket.handshake.address,
+            pingTime: null,
+            disconnected: false,
+            warning: false,
+          };
+        }
         clientEntries.forEach(x => {
           if(x.introduction == "admin")
           {
@@ -393,11 +407,8 @@ io.on('connection', function (socket) {
         lock.acquire("socketIntroduction", () =>
         {
           var index = clientEntries.findIndex(x => x.socket == socket);
+          if(index == -1 || !clientEntries[index].disconnected) return;
           clientEntries.forEach(x => {
-            if(index == -1)
-            {
-              return;
-            }
             if(x.introduction == "admin")
             {
               x.socket.emit("removeClient", clientEntries[index].id);
