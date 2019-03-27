@@ -428,10 +428,13 @@ io.on('connection', function (socket) {
       }
       clientEntries[index].pingTime = -1;
       setTimeout(() =>{
-        var index = clientEntries.findIndex(x => x.socket == socket);
-        if(index == -1 || clientEntries[index].disconnected) return;
-        clientEntries[index].pingTime = Date.now();
-        socket.emit('manual-ping');
+        lock.acquire("socketIntroduction", () =>
+        {
+          var index = clientEntries.findIndex(x => x.socket == socket);
+          if(index == -1 || clientEntries[index].disconnected) return;
+          clientEntries[index].pingTime = Date.now();
+          socket.emit('manual-ping');
+        });
       }, 2000);
       clientEntries.forEach(x => {
         if(x.introduction == "admin")
