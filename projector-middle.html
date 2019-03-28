@@ -25,8 +25,10 @@
   <script>
     var socket = io();
     var question = {};
-    socket.on('tick', function (data) { document.getElementById("clock").innerHTML = data; });
-    socket.on('setquestion', function (data) {
+    onEx(socket, 'tick', function (time) { 
+      document.getElementById("clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2); 
+    });
+    onEx(socket, 'setquestion', function (data) {
       document.getElementById("round-info").style.visibility = "hidden";
       document.getElementById("question-info").style.visibility = "visible";
       var questioninfo;
@@ -47,9 +49,9 @@
       document.getElementById("text").innerHTML = data.question;
       document.getElementById("clock").innerHTML = tomin(data.time);
     });
-    socket.on('round', function (data) { roundstart(data); });
-    socket.on('openquestion', function (data) { openquestion(); });
-    socket.on('openanswer', function (data) { openanswer(); });
+    onEx(socket, 'round', function (data) { roundstart(data); });
+    onEx(socket, 'openquestion', function (data) { openquestion(); });
+    onEx(socket, 'openanswer', function (data) { openanswer(); });
     introduce(socket, "proj-mid");
   </script>
 </head>

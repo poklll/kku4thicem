@@ -34,32 +34,25 @@
 
   <script>
     var socket = io();
-    socket.on('init', (data) => {
-      table = data.table, currentround = data.round;
-      roundsetup(currentround);
-      if(team)
-      {
-        score = table[table.findindexbyabbr(team)].score;
-      }
-    })
-    socket.on('screenshot', function () { screenshot(); });
-    socket.on('setteamlist', function (data) { table = data; setdropdown(); });
-    socket.on('clearcanvas', function () { resetcanvas() });
-    socket.on('blackout', function (data) { if (team == data) { blackout(); } });
-    socket.on('setquestion', function (data) {
+    socket.intro = 'canver';
+    onEx(socket, 'screenshot', function () { screenshot(); });
+    onEx(socket, 'setteamlist', function (data) { table = data; setdropdown();  });
+    onEx(socket, 'clearcanvas', function () { resetcanvas() });
+    onEx(socket, 'blackout', function (data) { if (team == data) { blackout(); } });
+    onEx(socket, 'setquestion', function (data) {
       question = data;
     });
-    socket.on('openquestion', function () {
+    onEx(socket, 'openquestion', function () {
       if (currentround == "final:the error detector") {
         showquestion();
       }
     });
-    socket.on('round', function (data) { roundsetup(data); });
-    socket.on('scorechange', function (data) {
+    onEx(socket, 'round', function (data) { roundsetup(data); });
+    onEx(socket, 'scorechange', function (data) {
       table = data.datatable;
       score = table[table.findindexbyabbr(team)].score;
     });
-    socket.on('hitsetscore', function (data) {
+    onEx(socket, 'hitsetscore', function (data) {
       setscore(data);
     });
 

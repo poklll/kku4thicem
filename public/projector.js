@@ -44,8 +44,6 @@ function roundsetup(round)
      {
         document.getElementById("thefast").style.visibility = "hidden";
      }
-     
-
 }
 
 function setscore(team,score)

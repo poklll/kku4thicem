@@ -92,7 +92,7 @@ function select() {
   document.getElementById("teamselectionmenu").style.visibility = "hidden";
   document.getElementById("name").innerHTML = team;
   score = table[table.findindexbyabbr(team)].score;
-  //setscore(team);
+  setscore(team);
   introduce(socket, "canver-" + name);
 }
 
@@ -145,11 +145,10 @@ function blackout() {
 }
 
 function setscore(data) {
-  if (team == data && currentround == "resuscitation") {
+  if (team == data ) {
     var scoreselection = document.getElementById("score-selection");
     scoreselection.style.visibility = "visible";
     choices = Math.floor(score / 10);
-    alert
     for (var i = 1; i <= choices; i++) {
       var item = document.createElement("div");
       item.className = "score-item";

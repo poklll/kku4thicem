@@ -25,10 +25,11 @@
   <script>
     var socket = io();
     var question = {};
-    
-    socket.on('tick', function (data) { document.getElementById("clock").innerHTML = data; });
-    socket.on('setteamlist', function (data) { table = data; setdropdown(); });
-    socket.on('setquestion', function (data) {
+    socket.intro = "stage";
+    onEx(socket, 'tick', function (time) { 
+      document.getElementById("clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2); 
+    });
+    onEx(socket, 'setquestion', function (data) {
       document.getElementById("round-info").style.visibility = "hidden";
       document.getElementById("question-info").style.visibility = "visible";
       document.getElementById("body").style.backgroundColor = "white";
@@ -54,18 +55,14 @@
       document.getElementById("text").innerHTML = data.question;
       document.getElementById("clock").innerHTML = tomin(data.time);
     });
-    socket.on('setteamlist', function (data) { table = data; setdropdown(); });
-    socket.on('scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "Score: " + table[table.findindexbyabbr(team)].score; });
-    socket.on('round', function (data) { roundstart(data); });
-    socket.on('openquestion', function (data) { openquestion(); });
-    socket.on('openanswer', function (data) { openanswer(); });
-    socket.on('correct', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "green"; } });
-    socket.on('wrong', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "crimson"; } });
-    socket.on('blackout', function (data) { if (team == data) { blackout(); } });
-    socket.on('setquestionscore', function (data) {
-      document.getElementById("question-info-text").innerHTML += "<br>Score: "+data;
-
-    });
+    onEx(socket, 'setteamlist', function (data) { table = data; setdropdown(); });
+    onEx(socket, 'scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "Score: " + table[table.findindexbyabbr(team)].score; });
+    onEx(socket, 'round', function (data) { roundstart(data); });
+    onEx(socket, 'openquestion', function (data) { openquestion(); });
+    onEx(socket, 'openanswer', function (data) { openanswer(); });
+    onEx(socket, 'correct', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "green"; } });
+    onEx(socket, 'wrong', function (data) { if (data == team) { document.getElementById("body").style.backgroundColor = "crimson"; } });
+    onEx(socket, 'blackout', function (data) { if (team == data) { blackout(); } });
   </script>
 </head>
 

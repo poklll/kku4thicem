@@ -27,6 +27,7 @@
   crossorigin="anonymous"></script>
 
   <script>
+    var pauseConsole = false;
     var socket = io();
     socket.on('positionchange', function (data) { change(data.from, data.to) });
     socket.on('delete', function (data) { deleterow(data) });
@@ -37,16 +38,24 @@
     // client tracking code!!
     introduce(socket, "admin");
 
-    var newClientCounter = 1;
     socket.on("showNewClient", (entry) => {
-      $("#clients-table tbody").append(
-        "<tr id='client-table-row-" + entry.id + "'>" +
-            "<td>" + newClientCounter++ + "</td>" +
-            "<td>" + entry.introduction + "</td>" +
-            "<td>" + entry.ip + "</td>" +
-            "<td class='latency'>-</td>" +
-        "</tr>"
-      );
+      if($("tr#client-table-row-" + entry.id).length > 0)
+      {
+        $("tr#client-table-row-" + entry.id).css('color', 'black');
+        $("tr#client-table-row-" + entry.id + " .latency").html("-");
+      }
+      else
+      {
+        $("#clients-table tbody").append(
+          "<tr id='client-table-row-" + entry.id + "'>" +
+              "<td class='order'></td>" +
+              "<td>" + entry.introduction + "</td>" +
+              "<td>" + entry.ip + "</td>" +
+              "<td class='latency'>-</td>" +
+          "</tr>"
+        );
+        updateClientOrderNum();
+      }
     });
     socket.on("grayoutClient", (id) => {
       $("tr#client-table-row-" + id).css('color', 'grey');
@@ -58,10 +67,21 @@
     });
     socket.on("removeClient", (id) => {
       $("tr#client-table-row-" + id).remove();
+      updateClientOrderNum();
     })
     socket.on("updateClientLatency", (id, latency) => {
       $("tr#client-table-row-" + id + " .latency").html(latency);
     })
+    socket.on("addConsoleText", (text) => {
+      if(pauseConsole) return;
+      $("#feedback-console").append(text + "<br>");
+      $("#feedback-console").scrollTop($("#feedback-console")[0].scrollHeight);
+    });
+
+    function updateClientOrderNum()
+    {
+      $("#clients-table .order").each((i, e) => $(e).html(i + 1));
+    }
   </script>
 </head>
 
@@ -130,8 +150,10 @@
             <option value="alarm">Alarm</option>
             <option value="redblink">Redblink</option>
             <option value="blueblink">Blueblink</option>
+            <option value="greenblink">GreenBlink</option>
             <option value="red">Red</option>
             <option value="blue">Blue</option>
+            <option value="green">Green</option>
           </select>
           <div class="buttonpanel" id="LEDpanel">
             <button id="LEDon" class="btn btn-success" onclick="LEDon()">turn on LED</button>
@@ -171,28 +193,32 @@
       <span class="sr-only">Next</span>
     </a>
   </div>
-
-
-  <div class="scoreview">
-
-    <table class="table table-hover" id="scoretable">
-      <thead>
-        <tr>
-          <th scope="col">Rank</th>
-          <th scope="col">Name</th>
-          <th scope="col">Score</th>
-        </tr>
-      </thead>
-      <tbody id="tablepanel">
-
-      </tbody>
-    </table>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="scoreview">
+        <table class="table table-hover" id="scoretable">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">Name</th>
+              <th scope="col">Score</th>
+            </tr>
+          </thead>
+          <tbody id="tablepanel">
+    
+          </tbody>
+        </table>
+      </div>
   </div>
-
-
-
-
-
+  <div class="row" style="height: 400px; background-color:black; color:white; padding:10px; overflow-y: scroll;" id="feedback-console">
+    
+  </div>
+  <div class="row" style="background-color:black;">
+    <button type="button" id="btn-pause-console" class="btn btn-warning" 
+      onclick="pauseConsole = !pauseConsole; $('#btn-pause-console').text(pauseConsole ? 'Resume' : 'Pause');">Pause</button>
+    <button type="button" class="btn btn-danger" onclick="$('#feedback-console').html('')">Clear</button>
+  </div>
+</div>
 </body>
 
 </html>
