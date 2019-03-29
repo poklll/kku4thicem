@@ -16,6 +16,7 @@ function roundstart(round)
 function openquestion()
 {
   document.getElementById("question-info").style.visibility = "hidden";
+  document.getElementById("clock").innerHTML = tomin(question.time);
 }
 function openanswer()
 {

@@ -27,7 +27,8 @@
     var question = {};
     socket.intro = "stage";
     onEx(socket, 'tick', function (time) { 
-      document.getElementById("clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2); 
+      document.getElementById("clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2);
+      document.getElementById("helper-clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2); 
     });
     onEx(socket, 'setquestion', function (data) {
       document.getElementById("round-info").style.visibility = "hidden";
@@ -35,25 +36,25 @@
       document.getElementById("body").style.backgroundColor = "white";
       var questioninfo;
       if (data.level == undefined && data.score == undefined) {
-        questioninfo = "Time: " + tomin(data.time) + " min";
+        questioninfo = currentround + " " + question.section + "<br>"+"Time: " + tomin(data.time) + " min";
       }
       else
         if (data.level == undefined) {
-          questioninfo = "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
+          questioninfo = currentround + " " + question.section + "<br>"+"Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
         }
         else
           if (data.score == undefined) {
-            questioninfo = "Level: " + data.level + "<br>" + "Time: " + tomin(data.time) + " min";
+            questioninfo = currentround + " " + question.section + "<br>"+"Level: " + data.level + "<br>" + "Time: " + tomin(data.time) + " min";
           }
           else {
-            questioninfo = "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
+            questioninfo = currentround + " " + question.section + "<br>"+"Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
 
           }
       document.getElementById("question-info-text").innerHTML = questioninfo;
       question = data;
       document.getElementById("head").innerHTML = currentround + " " + data.section;
       document.getElementById("text").innerHTML = data.question;
-      document.getElementById("clock").innerHTML = tomin(data.time);
+     
     });
     onEx(socket, 'setteamlist', function (data) { table = data; setdropdown(); });
     onEx(socket, 'scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "Score: " + table[table.findindexbyabbr(team)].score; });
@@ -100,7 +101,8 @@
   <div class="header" id="head"></div>
   <div class="question" id="text"></div>
   <div class="timer" id="clock"></div>
-
+  <div id="helper-timer"></div>
+  <img style="height: 30vh;width: 10vw; position: fixed; z-index: 7; align-self: flex-end; margin-top: 45vh; margin-right: 10px; "src="/asset/ICEMinwARM2.svg">
 </body>
 
 </html>

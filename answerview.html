@@ -115,8 +115,9 @@
                             <button class="btn btn-secondary" onclick="openquestion()" id="openquestion">showquestion</button>
                             <button class="btn btn-info" onclick="openanswer()" id="openanswer">showanswer</button>
                             <button class="btn btn-success" id="toggletimer" onclick="timerOn()">start timer</button>
-                            <button class="btn btn-warning" onclick="screenshot()">screenshot</button>
-                            <button class="btn btn-light" onclick="resetcanvas()">reset screens</button>
+                            <button class="btn btn-warning" id="screenshot" onclick="screenshot()">screenshot</button>
+                            <button class="btn btn-light" id="resetcanvas" onclick="resetcanvas()">reset screens</button>
+                            <button class="btn btn-light" id="resetcanvas" onclick="resetcanvas()">start challenge</button>
                             <button id="enableButton" class="btn btn-secondary" onclick="enablebutton()">Button disabled</button>
                         </div>
 
@@ -143,62 +144,7 @@
 
     <div class="container-fluid">
         <div class="row">
-                <div id="thefast">
-                        <div>
-                                <div class="flex-container2">
-                                        <div class="flex-item2" id="team1">
-                                            <div class="teampanel" id="team1panel2">
-                                                <p class="teamlabel" id="team1label2"></p>
-                                                <div class="btn-container">
-                                                    <button class="btn btn-success correct" onclick="correct(1)">Correct</button>
-                                                    <button class="btn btn-danger wrong" onclick="wrong(1)">Wrong</button>
-                                                </div>
-                                            </div>
-                                            <div class="status" id="status1">Answer</div>
-                                        </div>
-                                        <div class="flex-item2" id="team2">
-                                            <div class="teampanel" id="team2panel2">
-                                                <p class="teamlabel" id="team2label2"></p>
-                                                <div class="btn-container">
-                                                    <button class="btn btn-success correct" onclick="correct(2)">Correct</button>
-                                                    <button class="btn btn-danger wrong" onclick="wrong(2)">Wrong</button>
-                                                </div>
-                                            </div>
-                                            <div class="status" id="status2"></div>
-                                        </div>
-                                        <div class="flex-item2" id="team3">
-                                            <div class="teampanel" id="team3panel2">
-                                                <p class="teamlabel" id="team3label2"></p>
-                                                <div class="btn-container">
-                                                    <button class="btn btn-success correct" onclick="correct(3)">Correct</button>
-                                                    <button class="btn btn-danger wrong" onclick="wrong(3)">Wrong</button>
-                                                </div>
-                                            </div>
-                                            <div class="status" id="status3"></div>
-                                        </div>
-                                        <div class="flex-item2" id="team4">
-                                            <div class="teampanel" id="team4panel2">
-                                                <p class="teamlabel" id="team4label2"></p>
-                                                <div class="btn-container">
-                                                    <button class="btn btn-success correct" onclick="correct(4)">Correct</button>
-                                                    <button class="btn btn-danger wrong" onclick="wrong(4)">Wrong</button>
-                                                </div>
-                                            </div>
-                                            <div class="status" id="status4"></div>
-                                        </div>
-                                        <div class="flex-item2" id="team5">
-                                            <div class="teampanel" id="team5panel2">
-                                                <p class="teamlabel" id="team5label2"></p>
-                                                <div class="btn-container">
-                                                    <button class="btn btn-success correct" onclick="correct(5)">Correct</button>
-                                                    <button class="btn btn-danger wrong" onclick="wrong(5)">Wrong</button>
-                                                </div>
-                                            </div>
-                                            <div class="status" id="status5"></div>
-                                        </div>
-                        </div>
-                </div>
-            </div>
+            
     <div class="flex-container">
         <div class="flex-item" id="team1">
             <img id="team1img" onclick="fullscreen(this.src)">

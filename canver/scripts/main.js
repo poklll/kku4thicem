@@ -5,6 +5,7 @@ var score;
 var question;
 var leader = [];
 var currentround;
+var challenge = false;
 /*if (!("ontouchend" in document || location.search === '?debug=1')) {
   window.location = 'unsupported.html';
 }*/
@@ -26,6 +27,14 @@ window.onload = function () {
 
 
 };
+
+function init(data)
+{
+    table = data.table;
+    question = data.question;
+    currentround = data.currentround;
+   
+}
 function roundsetup(round) {
   currentround = round;
   if (round == "semifinal") {
@@ -85,6 +94,8 @@ function resetcanvas() {
   context.fillRect(0, 0, canvas.width, canvas.height);
 
 }
+
+//select team
 function select() {
   var select = document.getElementById("teamselection");
   var name = select.options[select.selectedIndex].text;
@@ -92,7 +103,6 @@ function select() {
   document.getElementById("teamselectionmenu").style.visibility = "hidden";
   document.getElementById("name").innerHTML = team;
   score = table[table.findindexbyabbr(team)].score;
-  setscore(team);
   introduce(socket, "canver-" + name);
 }
 
@@ -147,22 +157,28 @@ function blackout() {
 function setscore(data) {
   if (team == data ) {
     var scoreselection = document.getElementById("score-selection");
+    scoreselection.innerHTML = "";
     scoreselection.style.visibility = "visible";
     choices = Math.floor(score / 10);
-    for (var i = 1; i <= choices; i++) {
-      var item = document.createElement("div");
+    hue = 140;
+    for (let i = 1; i <= choices; i++) {
+      let item = document.createElement("div");
       item.className = "score-item";
       scoreselection.appendChild(item);
       item.innerHTML = i * 10;
-      item.addEventListener("click", selectscore(this.innerHTML));
+      item.score = i*10;
+      item.addEventListener("click",()=>{selectscore(this,i*10)},false);
+      item.style.backgroundColor = 'hsl(' + hue + ',70%,50%)';
+      hue-= 150/choices;
     }
 
   }
 }
 
-function selectscore(score) {
+function selectscore(item,score) {
   var scoreselection = document.getElementById("score-selection");
   socket.emit('setquestionscore', score);
+  alert("this question's score was set to "+score);
   scoreselection.style.visibility = "hidden";
 }
 Array.prototype.findindexbyabbr = function (name) {

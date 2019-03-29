@@ -1,0 +1,57 @@
+.stage
+{
+    display:flex;
+    flex-wrap: wrap;
+    height: 100vh;
+    width: 100vw;
+}
+
+.table
+{
+    flex: 1 1 25%;
+    background-color: burlywood;
+    border: 1px solid black;
+}
+
+.teamname
+{
+    height: 10vh;
+    width: 10vw;
+    font-size: 5vh;
+    text-align: center;
+    vertical-align: middle;
+    background-color: white;
+    border: 1px solid black;
+}
+.LED
+{
+    width: inherit;
+    height: 10vh;
+    background-color: gray;
+    font-size: 5vh;
+    text-align: center;
+    vertical-align: middle;
+    
+}
+.Button
+{
+    height: 15vh;
+    width: 15vh;
+    border-radius: 100%;
+    background-color: gray;
+    font-size: 5vh;
+    margin-left: 10vw;
+    text-align: center;
+    vertical-align: middle;
+}
+.siren
+{
+   
+    height: 10vh;
+    width: 10vh;
+    border-radius: 100%;
+    background-color: gray;
+    font-size: 5vh;
+    text-align: center;
+    vertical-align: middle;
+}

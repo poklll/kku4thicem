@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>4th ICEM</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script src='/socket.io/socket.io.js'></script>
+  <script src="public/html2canvas.min.js"></script>
+  <script src="public/stage.js"></script>
+  <script src="/public/helper.js"></script>
+  <link rel="stylesheet" type="text/css" href="public/tester.css">
+  <link rel="stylesheet" href="public/animate.css">
+  <script>
+    var socket = io();
+    var table = [];
+    socket.on('tester', function (data) {
+      table = data;
+      setup();
+    });
+
+    socket.on('turnOnSiren', (data) => { Siren(data, true); });
+    socket.on('turnOffSiren', (data) => { Siren(data, false); });
+    socket.on('enableButton', (data) => { Button(true); })
+    socket.on('disableButton', (data) => { Button(false); })
+    socket.on('turnOnLedStrip', (data) => { LED(data); });
+    socket.on('turnOffLedStrip', (data) => { LEDoff(data); });
+    socket.on('LEDOff', function (data) { socket.broadcast.emit('turnOffLedStrip', parseInt(data)); });
+    function setup() {
+      var tablelist = document.getElementsByClassName("table");
+      for (var i = 0; i < table.length; i++) {
+        tablelist[i].getElementsByClassName("teamname")[0].innerHTML = table[i].abbr;
+        let buttonnumber = table[i].buttonnumber;
+        tablelist[i].getElementsByClassName("Button")[0].addEventListener("click",
+          function () {
+            buttonhit(buttonnumber);
+          }
+        );
+
+      }
+    };
+    function buttonhit(number) {
+      socket.emit('buttonHit', number);
+    }
+    function LED(data) {
+      var str = data.split(",");
+      var number = parseInt(str[0]);
+      var pattern = str[1];
+      $(".LED").eq(number - 1).text(pattern);
+      var color;
+      switch (pattern) {
+        case "red": color = "red";
+          break;
+        case "redblink": color = "orange";
+          break;
+        case "blue": color = "blue";
+          break;
+        case "blueblink": color = "cornflowerblue";
+          break;
+        case "green": color = "green";
+          break;
+        case "greenblink": color = "greenyellow";
+          break;
+        case "alarm": color = "crimson";
+          break;
+      }
+      $(".LED").eq(number - 1).css("background-color", color);
+    }
+    function LEDoff(data) {
+      $(".LED").eq(data - 1).css("background-color", "grey");
+      $(".LED").eq(data - 1).text("LED");
+    }
+    function Siren(data, status) {
+      $(".siren").eq(data - 1).css("background-color", status ? "red" : "grey");
+    }
+    function Button(status) {
+      $(".Button").css("background-color", status ? "red" : "grey");
+    }
+  </script>
+</head>
+<div class="stage">
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+  <div class="table">
+    <div class="teamname"></div>
+    <div class="LED">LED</div>
+    <div class="siren"></div>
+    <div class="Button"></div>
+  </div>
+</div>
+
+
+</body>
+
+</html>

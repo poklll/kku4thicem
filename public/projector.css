@@ -1,3 +1,9 @@
+html{
+
+    overflow: hidden;
+}
+
+
 #edit {
     font-family: Impact;
     position: fixed;
@@ -62,7 +68,7 @@
     background-color: cornflowerblue;
 }
 .teamlabel {
-    font-size: 20px;
+    font-size: 50px;
     text-align: center;
     font-family: Impact;
     color: white;

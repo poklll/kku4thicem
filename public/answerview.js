@@ -29,12 +29,7 @@ function addimage(data)
         document.getElementById("team"+(i+1)+"label").innerHTML = table[i].abbr;
 
      }
-     for(var i = 0;i<5;i++)
-     {
-        document.getElementById("team"+(i+1)+"label2").innerHTML = table[i].abbr;
-     }
     
-
      
 }
 
@@ -43,12 +38,19 @@ function roundsetup(round)
      currentround = round;
      if(currentround == "final:the fast")
      {
-         document.getElementById("thefast").style.visibility = "visible";
+        $("#resetcanvas,#screenshot").css("visibility","hidden");
      }
      else
      {
-        document.getElementById("thefast").style.visibility = "hidden";
+        $("#resetcanvas,#screenshot").css("visibility","visible");
      }
+
+
+}
+
+function manualsetscore(team,score)
+{
+    socket.emit('manual-setscore',{name:team,score:score});
 }
 
 function setscore(team,score)
@@ -64,7 +66,7 @@ function submitscore(score,type)
    var select = document.getElementById("teamselection");
    var value = select.options[select.selectedIndex].value;
    var team = select.options[select.selectedIndex].text;
-   socket.emit('setscore',{name:team,score:score});
+   socket.emit('manual-setscore',{name:team,score:score});
     
 }
 
@@ -210,7 +212,6 @@ function correct(teamnumber)
 function wrong(teamnumber)
 {
     document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="red";
-    //document.getElementById("status"+teamnumber).style.backgroundColor ="red";
     var name = document.getElementById("team"+teamnumber+"label").innerHTML;
     var score = 0-parseInt(question.score);
     setscore(name,score);
@@ -223,7 +224,7 @@ function wrong(teamnumber)
 function iscomplete()
 {
     if(judge == 0)
-    {
+    {   alert(judge);
         socket.emit('judgecomplete',true);
 
     }

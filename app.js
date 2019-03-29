@@ -13,6 +13,9 @@ app.use('/flag', express.static(path.join(__dirname, 'public/asset/Flag')));
 router.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
 });
+router.get('/tester', function (req, res) {
+  res.sendFile(path.join(__dirname + '/tester.html'));
+});
 router.get('/user', function (req, res) {
   res.sendFile(path.join(__dirname + '/scoreuser.html'));
 });
@@ -62,7 +65,7 @@ var question = {};
 var defaultpositivefactor = 1;
 var defaultnegativefactor = 1;
 var Round = []; //name,rule
-var CurrentRound;
+var currentround;
 var Currentteam;
 var socketID = [];
 
@@ -273,7 +276,7 @@ var count = function () {
   if (timerOn) {
     if (time > 0) {
       time--;
-      if(!firstTick) tickMissing += teamCount - tickFeedbackImmediateCount - tickFeedbackDelayCount;
+      if (!firstTick) tickMissing += teamCount - tickFeedbackImmediateCount - tickFeedbackDelayCount;
       console.log("Tick! [" + time + "] (on-time: " + tickFeedbackImmediateCount + ", delay: " + tickFeedbackDelayCount + ", missing: " + tickMissing + ")");
       tickFeedbackImmediateCount = 0;
       tickFeedbackDelayCount = 0;
@@ -284,7 +287,7 @@ var count = function () {
       timerOn = false;
       io.sockets.emit('screenshot', true);
       io.sockets.emit('clearcanvas', true);
-      io.sockets.emit('timeup',true);
+      io.sockets.emit('timeup', true);
       tickFeedbackImmediateCount = 0;
       tickFeedbackDelayCount = 0;
       tickMissing = 0;
@@ -307,13 +310,12 @@ var lock = new AsyncLock();
 
 // Override console.log
 var originConsoleLog = console.log;
-console.log = function(data) {
+console.log = function (data) {
   lock.acquire("socketIntroduction", () => {
     var d = new Date();
     var ds = "[" + d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0') + ":" + d.getSeconds().toString().padStart(2, '0') + "] ";
     clientEntries.forEach(x => {
-      if(x.introduction == "admin" || x.introduction == "committee")
-      {
+      if (x.introduction == "admin" || x.introduction == "committee") {
         x.socket.emit("addConsoleText", ds + data);
       }
     });
@@ -322,102 +324,85 @@ console.log = function(data) {
 };
 
 io.on('connection', function (socket) {
-  
-  socket.on('link',function(name){
-       socketID.push({name:name,id:socket.id});
-       console.log(socketID[socketID.length-1].name + " is connected");
-  });
 
-  //console.log("client is connected");
 
-  socket.on("introduce", function(intro) {
-      lock.acquire("socketIntroduction", () => {
-        var index = clientEntries.findIndex(x => x.socket == socket);
-        if(index != -1) return;
-        index = clientEntries.findIndex(x => 
-          x.ip == socket.handshake.address && x.introduction == intro && x.disconnected);
-        var entry = null;
-        if(index != -1)
-        {
-          console.log("client '" + intro + "' reconnected");
-          entry = clientEntries[index];
-          clientEntries.splice(index, 1);
-          entry.socket = socket;
-          entry.disconnected = false;
+  socket.on("introduce", function (intro) {
+    lock.acquire("socketIntroduction", () => {
+      var index = clientEntries.findIndex(x => x.socket == socket);
+      if (index != -1) return;
+      index = clientEntries.findIndex(x =>
+        x.ip == socket.handshake.address && x.introduction == intro && x.disconnected);
+      var entry = null;
+      if (index != -1) {
+        console.log("client '" + intro + "' reconnected");
+        entry = clientEntries[index];
+        clientEntries.splice(index, 1);
+        entry.socket = socket;
+        entry.disconnected = false;
+      }
+      else {
+        console.log("client '" + intro + "' connected");
+        entry = {
+          socket: socket,
+          id: nextSocketId++,
+          introduction: intro,
+          ip: socket.handshake.address,
+          pingTime: null,
+          disconnected: false,
+          warning: false,
+        };
+      }
+      clientEntries.forEach(x => {
+        if (x.introduction == "admin") {
+          x.socket.emit("showNewClient", omit(entry, 'socket'));
         }
-        else
-        {
-          console.log("client '" + intro + "' connected");
-          entry = {
-            socket: socket, 
-            id: nextSocketId++, 
-            introduction: intro, 
-            ip: socket.handshake.address,
-            pingTime: null,
-            disconnected: false,
-            warning: false,
-          };
-        }
+      });
+      clientEntries.push(entry);
+
+      if (intro == "admin") {
         clientEntries.forEach(x => {
-          if(x.introduction == "admin")
-          {
-            x.socket.emit("showNewClient", omit(entry, 'socket'));
-          }
+          socket.emit("showNewClient", omit(x, 'socket'));
+          if (x.disconnected) socket.emit("grayoutClient", x.id);
+          else if (x.warning) socket.emit("warningClient", x.id, true);
         });
-        clientEntries.push(entry);
-  
-        if(intro == "admin")
-        {
+      }
+
+      entry.pingTime = Date.now();
+      socket.emit('manual-ping');
+      var intervalId = setInterval(() => {
+        if (entry.disconnected) {
+          clearInterval(intervalId);
+        }
+        else if (entry.pingTime != -1 && Date.now() - entry.pingTime > 1000 && !entry.warning) {
+          console.log("client '" + entry.introduction + "' not responding");
+          entry.warning = true;
           clientEntries.forEach(x => {
-            socket.emit("showNewClient", omit(x, 'socket'));
-            if(x.disconnected) socket.emit("grayoutClient", x.id);
-            else if(x.warning) socket.emit("warningClient", x.id, true);
+            if (x.introduction == "admin") {
+              x.socket.emit("warningClient", entry.id, true);
+            }
           });
         }
-        
-        entry.pingTime = Date.now();
-        socket.emit('manual-ping');
-        var intervalId = setInterval(() => {
-          if(entry.disconnected) 
-          {
-            clearInterval(intervalId);
-          }
-          else if(entry.pingTime != -1 && Date.now() - entry.pingTime > 1000 && !entry.warning)
-          {
-            console.log("client '" + entry.introduction + "' not responding");
-            entry.warning = true;
-            clientEntries.forEach(x => {
-              if(x.introduction == "admin")
-              {
-                x.socket.emit("warningClient", entry.id, true);
-              }
-            });
-          }
-        }, 1000);
-      });
+      }, 1000);
     });
+  });
 
   socket.on('disconnect', () => {
-    lock.acquire("socketIntroduction", () =>
-    {
+    lock.acquire("socketIntroduction", () => {
       var index = clientEntries.findIndex(x => x.socket == socket);
-      if(index == -1) return;
+      if (index == -1) return;
       console.log("client '" + clientEntries[index].introduction + "' disconnected");
       clientEntries[index].disconnected = true;
       clientEntries.forEach(x => {
-        if(x.introduction == "admin")
-        {
+        if (x.introduction == "admin") {
           x.socket.emit("grayoutClient", clientEntries[index].id);
         }
       });
       setTimeout(() => {
-        lock.acquire("socketIntroduction", () =>
-        {
+        lock.acquire("socketIntroduction", () => {
           var index = clientEntries.findIndex(x => x.socket == socket);
-          if(index == -1 || !clientEntries[index].disconnected) return;
+          if (index == -1 || !clientEntries[index].disconnected) return;
           clientEntries.forEach(x => {
-            if(x.introduction == "admin")
-            {
+            if (x.introduction == "admin") {
               x.socket.emit("removeClient", clientEntries[index].id);
             }
           });
@@ -428,35 +413,30 @@ io.on('connection', function (socket) {
   });
 
   socket.on('manual-pong', () => {
-    lock.acquire("socketIntroduction", () =>
-    {
+    lock.acquire("socketIntroduction", () => {
       var index = clientEntries.findIndex(x => x.socket == socket);
-      if(index == -1 || clientEntries[index].disconnected || clientEntries[index].pingTime == -1) return;
+      if (index == -1 || clientEntries[index].disconnected || clientEntries[index].pingTime == -1) return;
       var latency = Date.now() - clientEntries[index].pingTime;
-      if(clientEntries[index].warning)
-      {
+      if (clientEntries[index].warning) {
         console.log("client '" + clientEntries[index].introduction + "' resume responding");
         clientEntries[index].warning = false;
         clientEntries.forEach(x => {
-          if(x.introduction == "admin")
-          {
+          if (x.introduction == "admin") {
             x.socket.emit("warningClient", clientEntries[index].id, false);
           }
         });
       }
       clientEntries[index].pingTime = -1;
-      setTimeout(() =>{
-        lock.acquire("socketIntroduction", () =>
-        {
+      setTimeout(() => {
+        lock.acquire("socketIntroduction", () => {
           var index = clientEntries.findIndex(x => x.socket == socket);
-          if(index == -1 || clientEntries[index].disconnected) return;
+          if (index == -1 || clientEntries[index].disconnected) return;
           clientEntries[index].pingTime = Date.now();
           socket.emit('manual-ping');
         });
       }, 2000);
       clientEntries.forEach(x => {
-        if(x.introduction == "admin")
-        {
+        if (x.introduction == "admin") {
           x.socket.emit("updateClientLatency", clientEntries[index].id, latency);
         }
       });
@@ -464,39 +444,29 @@ io.on('connection', function (socket) {
   });
 
   socket.on("feedback", (data) => {
-    if(data.error == null)
-    {
-      if(data.event == "tick")
-      {
-         if(data.tick == time)
-        {
-           tickFeedbackImmediateCount++;
+    if (data.error == null) {
+      if (data.event == "tick") {
+        if (data.tick == time) {
+          tickFeedbackImmediateCount++;
         }
-        else
-        {
+        else {
           tickFeedbackDelayCount++;
         }
         console.log(data.client + ": " + data.event + " success [" + data.tick + "]");
       }
-      else
-      {
+      else {
         console.log(data.client + ": " + data.event + " success");
       }
     }
-    else
-    {
+    else {
       console.log(data.client + ": " + data.event + " error: " + data.error);
     }
   });
 
   //init
-<<<<<<< HEAD
-
-  socket.emit('init', { table: table, questions: questions, question: question, round: CurrentRound });
-=======
-  socket.emit('init', { table: table, questions: questions });
->>>>>>> ae6eb02a942c164ef33996afbafaf8869ab079c7
+  socket.emit('init', { table: table, questions: questions, currentroun: currentround, question: question });
   socket.emit('setteamlist', table);
+  socket.emit('tester',table);
   //io.sockets.emit('setquestion', question);
   io.sockets.emit('setround', Round);
 
@@ -516,20 +486,20 @@ io.on('connection', function (socket) {
   }
   );
   socket.on('resetcanvas', function () { io.sockets.emit('clearcanvas', true); });
- 
- 
- 
+
+
+
   //timer
-  socket.on('settime', function (data) { time = data; });
+  socket.on('settimer', function (data) { time = data; });
   socket.on('timerOn', function (data) { timerOn = data; });
 
 
   //round
 
   socket.on('roundstart', function (data) {
-    CurrentRound = data;
-    console.log("round was set to " + CurrentRound);
-    roundsetup(CurrentRound);
+    currentround = data;
+    console.log("round was set to " + currentround);
+    roundsetup(currentround);
     io.sockets.emit('round', data);
     io.sockets.emit('setquestionlist', questions);
     //show helper
@@ -550,13 +520,14 @@ io.on('connection', function (socket) {
   });
   socket.on('openquestion', function (data) {
     io.sockets.emit('openquestion', data);
+    time = (question.time);
   });
   socket.on('openanswer', function () {
     io.sockets.emit('openanswer', true);
   });
   socket.on('judgecomplete', function () {
     console.log("judge was completed");
-    if (CurrentRound == "semifinal" && (question.section == 4 || question.section == 8)) {
+    if (currentround == "semifinal" && (question.section == 4 || question.section == 8)) {
       if (table[table.length - 1].score == table[table.length - 2].score) {
         table.splice(table.length - 1, 1);
         io.sockets.emit('blackout', table[table.length - 1].name);
@@ -569,16 +540,23 @@ io.on('connection', function (socket) {
   //question
 
   socket.on('questionshow', function (data) {
-    resetfactor();
+    if(currentround != "final:the leader")
+    {
+      resetfactor();
+    }
     timerOn = false;
     question = data;
     io.sockets.emit('setquestion', data);
-    time = (question.time);
+    if(currentround == "semifinal")
+    {
+         time = 10;
+    }
+    
   });
   socket.on('setquestionscore', function (data) {
     question.score = data;
-    io.sockets.emit('setquestion', data);
-    console.log(question.section + "score was set to " + data);
+    io.sockets.emit('setquestion', question);
+    console.log(currentround +" "+question.section + " score was set to " + data);
   });
 
   //team
@@ -621,10 +599,10 @@ io.on('connection', function (socket) {
       sum = parseFloat(table[index].score) + (parseInt(data.score) * parseFloat(table[index].negativefactor));
     }
     //resuscitation
-    if (CurrentRound == "resuscitation" && sum <= 0) {
+    if (currentround == "resuscitation" && sum <= 0) {
       io.sockets.emit('blackout', data.name);
       table.splice(table.findindexbyabbr(data.name), 1);
-      io.sockets.emit('init', { table: table, questions: questions,  });
+      io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
     }
     else {
       var previousposition = index;
@@ -636,22 +614,66 @@ io.on('connection', function (socket) {
       //console.log(" ");
       //console.log(table);
       var newposition = table.findindexbyabbr(data.name);
-      console.log(sum + " score was added to " + data.name);
+      console.log(data.score + " score was added to " + data.name);
+      console.log(data.name+" score: "+sum);
       console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
       io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
       io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
     }
   });
 
+  socket.on('manual-setscore', function (data) {
+    var index = table.findindexbyabbr(data.name);
+    var sum;
+    if (data.score > 0) {
+      sum = parseInt(table[index].score) + parseInt(data.score) ;
+    }
+    else {
+      sum = parseFloat(table[index].score) + parseInt(data.score);
+    }
+    //resuscitation
+    if (currentround == "resuscitation" && sum <= 0) {
+      io.sockets.emit('blackout', data.name);
+      table.splice(table.findindexbyabbr(data.name), 1);
+      io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
+    }
+    else {
+      var previousposition = index;
+      //console.log(table);
+      table[index].score = sum;
+      table.sort(function (a, b) {
+        return b.score - a.score;
+      });
+      //console.log(" ");
+      //console.log(table);
+      var newposition = table.findindexbyabbr(data.name);
+      console.log(data.score + " score was added to " + data.name);
+      console.log(data.name+" score: "+sum);
+      console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
+      io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
+      io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
+    }
+  });
+  socket.on('kill',function(data){
+    io.sockets.emit('blackout', data.name);
+    table.splice(table.findindexbyabbr(data.name), 1);
+    io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
+    console.log(data.name+" is eliminated");
+  });
 
   //stage
 
   socket.on('buttonHit', function (data) {
-    console.log("button " + data + "was hit!");
-    if (CurrentRound == "resuscitation") {
+    console.log("button " + data + " was hit!");
+    if (currentround == "resuscitation") {
       var name = table.findabbrbybtn(data);
       io.sockets.emit('hitsetscore', name);
 
+    }
+    if(currentround == "final:the fast")
+    {
+        time = 20;
+        timerOn = true;
     }
   })
   socket.on('success', function (data) { console.log(data) });
@@ -724,6 +746,11 @@ function resetfactor() {
   });
   io.sockets.emit('init', { table: table, questions: questions });
 }
+
+function blackout()
+{
+
+}
 Number.prototype.pad = function (size) {
   var s = String(this);
   while (s.length < (size || 2)) { s = "0" + s; }
@@ -746,7 +773,7 @@ Array.prototype.findabbrbybtn = function (number) {
   }
 };
 
-Array.prototype.findsocketbyID = function(id) {
+Array.prototype.findsocketbyID = function (id) {
   var i;
   for (i = 0; i < this.length; i++) {
     if (this[i].id == id) { return this[i].name; }

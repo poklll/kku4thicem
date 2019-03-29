@@ -167,7 +167,7 @@ function submitscore(score,type)
    var select = document.getElementById("teamselection");
    var value = select.options[select.selectedIndex].value;
    var team = select.options[select.selectedIndex].text;
-   socket.emit('setscore',{name:team,score:score});
+   socket.emit('manual-setscore',{name:team,score:score});
     
 }
 

@@ -36,6 +36,7 @@
     var socket = io();
     socket.intro = 'canver';
     onEx(socket, 'screenshot', function () { screenshot(); });
+    onEx(socket, 'init', function(){init(data);});
     onEx(socket, 'setteamlist', function (data) { table = data; setdropdown();  });
     onEx(socket, 'clearcanvas', function () { resetcanvas() });
     onEx(socket, 'blackout', function (data) { if (team == data) { blackout(); } });
