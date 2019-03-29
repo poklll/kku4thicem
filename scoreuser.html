@@ -27,12 +27,17 @@
     var socket = io();
     onEx(socket, 'positionchange', function (data) { change(data.from, data.to) });
     onEx(socket, 'delete', function (data) { deleterow(data) });
-    onEx(socket, 'init', function (data) { table = data.table; questions = data.questions; init(); });
+    onEx(socket, 'init', function (data) { 
+      table = data.table;
+      questions = data.questions; 
+      showscore = data.showscore || true; 
+      init(); 
+    });
     onEx(socket, 'reset', function (data) { cleartable(); });
     //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
     onEx(socket, 'scorechange', function (data) { setscore(data.name, data.score); table = data.datatable; });
     onEx(socket, 'setscorefactor', function (data) { factoreffect(data); });
-    introduce(socket, "user");
+    introduce(socket, "scoreboard");
   </script>
 </head>
 

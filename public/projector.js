@@ -220,6 +220,7 @@ function iscomplete()
 
     }
 }
+
 function screenshot()
 {
     socket.emit('screenshot',true);

@@ -324,8 +324,6 @@ console.log = function (data) {
 };
 
 io.on('connection', function (socket) {
-
-
   socket.on("introduce", function (intro) {
     lock.acquire("socketIntroduction", () => {
       var index = clientEntries.findIndex(x => x.socket == socket);
@@ -469,8 +467,6 @@ io.on('connection', function (socket) {
   socket.emit('tester',table);
   //io.sockets.emit('setquestion', question);
   io.sockets.emit('setround', Round);
-
-
   //reset
 
   socket.on('reload', function () {
@@ -487,15 +483,12 @@ io.on('connection', function (socket) {
   );
   socket.on('resetcanvas', function () { io.sockets.emit('clearcanvas', true); });
 
-
-
   //timer
   socket.on('settimer', function (data) { time = data; });
   socket.on('timerOn', function (data) { timerOn = data; });
 
 
   //round
-
   socket.on('roundstart', function (data) {
     currentround = data;
     console.log("round was set to " + currentround);
@@ -525,17 +518,10 @@ io.on('connection', function (socket) {
   socket.on('openanswer', function () {
     io.sockets.emit('openanswer', true);
   });
-  socket.on('judgecomplete', function () {
-    console.log("judge was completed");
-    if (currentround == "semifinal" && (question.section == 4 || question.section == 8)) {
-      if (table[table.length - 1].score == table[table.length - 2].score) {
-        table.splice(table.length - 1, 1);
-        io.sockets.emit('blackout', table[table.length - 1].name);
-        socket.emit('init', { table: table, questions: questions });
-      }
-    }
-  }
-  )
+  socket.on('judgeSubmit', function () {
+    console.log("judge submitted.");
+    judgeSubmit();
+  });
 
   //question
 
@@ -574,7 +560,10 @@ io.on('connection', function (socket) {
   });
   socket.on('screenshot', function () { io.sockets.emit('screenshot', true); });
   socket.on('correct', function (data) { io.sockets.emit('correct', data) });
-  socket.on('wrong', function (data) { io.sockets.emit('wrong', data) });
+  socket.on('wrong', function (data) { 
+    io.sockets.emit('wrong', data);
+
+  });
   socket.on('setscorefactor', function (data) {
     table[table.findindexbyabbr(data.name)].positivefactor = data.positive;
     table[table.findindexbyabbr(data.name)].negativefactor = data.negative;
@@ -588,80 +577,30 @@ io.on('connection', function (socket) {
 
   socket.on('setscore', function (data) {
     var index = table.findindexbyabbr(data.name);
-    var sum;
-    if (data.score > 0) {
-      console.log("positivefactor: " + table[index].positivefactor);
-      sum = parseInt(table[index].score) + (parseInt(data.score) * parseInt(table[index].positivefactor));
-      console.log(data.score);
-      console.log(sum);
+    if(currentround == "sudden death")
+    {
+      //pass data.score as it is.
     }
-    else {
-      sum = parseFloat(table[index].score) + (parseInt(data.score) * parseFloat(table[index].negativefactor));
-    }
-    //resuscitation
-    if (currentround == "resuscitation" && sum <= 0) {
-      io.sockets.emit('blackout', data.name);
-      table.splice(table.findindexbyabbr(data.name), 1);
-      io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
-    }
-    else {
-      var previousposition = index;
-      //console.log(table);
-      table[index].score = sum;
-      table.sort(function (a, b) {
-        return b.score - a.score;
-      });
-      //console.log(" ");
-      //console.log(table);
-      var newposition = table.findindexbyabbr(data.name);
-      console.log(data.score + " score was added to " + data.name);
-      console.log(data.name+" score: "+sum);
-      console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
-      io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
-      io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
+    else
+    {
+      var sum;
+      if (data.score > 0) { //if correct
+        data.score = parseInt(data.score) * parseInt(table[index].positivefactor);
+      }
+      else {
+        data.score = (parseInt(data.score) * parseFloat(table[index].negativefactor);
+      }
+      addScoreCommand(data);
     }
   });
 
   socket.on('manual-setscore', function (data) {
-    var index = table.findindexbyabbr(data.name);
-    var sum;
-    if (data.score > 0) {
-      sum = parseInt(table[index].score) + parseInt(data.score) ;
-    }
-    else {
-      sum = parseFloat(table[index].score) + parseInt(data.score);
-    }
-    //resuscitation
-    if (currentround == "resuscitation" && sum <= 0) {
-      io.sockets.emit('blackout', data.name);
-      table.splice(table.findindexbyabbr(data.name), 1);
-      io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
-    }
-    else {
-      var previousposition = index;
-      //console.log(table);
-      table[index].score = sum;
-      table.sort(function (a, b) {
-        return b.score - a.score;
-      });
-      //console.log(" ");
-      //console.log(table);
-      var newposition = table.findindexbyabbr(data.name);
-      console.log(data.score + " score was added to " + data.name);
-      console.log(data.name+" score: "+sum);
-      console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
-      io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
-      io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
-    }
-  });
-  socket.on('kill',function(data){
-    io.sockets.emit('blackout', data.name);
-    table.splice(table.findindexbyabbr(data.name), 1);
-    io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
-    console.log(data.name+" is eliminated");
+    manualSetScore(data);
   });
 
-  //stage
+  socket.on('kill',function(data){
+    kill(data.name);
+  });
 
   socket.on('buttonHit', function (data) {
     console.log("button " + data + " was hit!");
@@ -711,7 +650,7 @@ function roundsetup(round) {
       break;
     case "sudden death":
       questions = suddendeathquestion;
-      resetscore(0);
+      resetscore(1);
       break;
     case "final:the fast":
       questions = finalfastquestion;
@@ -736,7 +675,7 @@ function resetscore(score) {
   table.map((team) => {
     team.score = score;
   });
-  io.sockets.emit('init', { table: table, questions: questions });
+  io.sockets.emit('init', { table: table, questions: questions, showscore: currentround != "sudden death" });
 }
 
 function resetfactor() {
@@ -747,10 +686,68 @@ function resetfactor() {
   io.sockets.emit('init', { table: table, questions: questions });
 }
 
-function blackout()
+function kill(teamName)
 {
-
+  if(Number.isInteger(teamName)) teamName = table[teamName].name;
+  io.sockets.emit('blackout', teamName);
+  table.splice(table.findindexbyabbr(teamName), 1);
+  io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
+  console.log(teamName+" is eliminated.");
 }
+
+var scoreCommands = [];
+function addScoreCommand(data)
+{
+  var i;
+  if((i = scoreCommands.findIndex(x => x.name == data.name)) != -1)
+  {
+    scoreCommands[i].score = data.score;
+  }
+  else
+  {
+    scoreCommands.push(data);
+  }
+}
+
+function judgeSubmit()
+{
+  scoreCommands.forEach(x => manualSetScore(data));
+  if (currentround == "semifinal" && (question.section == 4 || question.section == 8)) {
+    if (table[table.length - 1].score != table[table.length - 2].score) {
+      kill(table.length - 1);
+    }
+  }
+  scoreCommands.length = 0; //clear array
+}
+
+function manualSetScore(data)
+{
+  var index = table.findindexbyabbr(data.name);
+    var sum;
+    if (data.score > 0) {
+      sum = parseInt(table[index].score) + parseInt(data.score) ;
+    }
+    else {
+      sum = parseFloat(table[index].score) + parseInt(data.score);
+    }
+    //resuscitation
+    if ((currentround == "resuscitation" || currentround == "sudden death") && sum <= 0) {
+      kill(data.name);
+    } else {
+      var previousposition = index;
+      table[index].score = sum;
+      table.sort(function (a, b) {
+        return b.score - a.score;
+      });
+      var newposition = table.findindexbyabbr(data.name);
+      console.log(data.score + " score was added to " + data.name);
+      console.log(data.name+" score: "+sum);
+      console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
+      io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
+      io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
+    }
+}
+
 Number.prototype.pad = function (size) {
   var s = String(this);
   while (s.length < (size || 2)) { s = "0" + s; }
