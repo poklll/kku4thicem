@@ -26,11 +26,13 @@
     var socket = io();
     var question = {};
     socket.intro = "stage";
+    
     onEx(socket, 'tick', function (time) { 
       document.getElementById("clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2);
       document.getElementById("helper-clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2); 
     });
     onEx(socket, 'setquestion', function (data) {
+      question = data;
       document.getElementById("round-info").style.visibility = "hidden";
       document.getElementById("question-info").style.visibility = "visible";
       document.getElementById("body").style.backgroundColor = "white";
@@ -51,7 +53,7 @@
 
           }
       document.getElementById("question-info-text").innerHTML = questioninfo;
-      question = data;
+      
       document.getElementById("head").innerHTML = currentround + " " + data.section;
       document.getElementById("text").innerHTML = data.question;
      

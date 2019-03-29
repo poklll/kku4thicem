@@ -70,6 +70,7 @@ var defaultnegativefactor = 1;
 var Round = []; //name,rule
 var currentround;
 var challenge =false;
+var challengetimer =false;
 
 //Init data
 const fs = require('fs');
@@ -294,11 +295,11 @@ var count = function () {
       tickFeedbackDelayCount = 0;
       tickMissing = 0;
       firstTick = true;
-      if(challenge)
-      {
+      if(challengetimer)
+      { 
         time = 10;
         timerOn = true;
-        challenge = false;
+        challengetimer = false;
       }
     }
   }
@@ -623,6 +624,8 @@ io.on('connection', function (socket) {
         timerOn = true;
         io.sockets.emit('addimage',{name:name, image : "/public/asset/answer.PNG"});
         challenge = true;
+        challengetimer = true;
+        table[table.findindexbyabbr(name)].negativefactor = 0;
       }
       else
       {
@@ -630,6 +633,7 @@ io.on('connection', function (socket) {
         timerOn = true;
         io.sockets.emit('addimage',{name:name, image : "/public/asset/Challenge.PNG"});
         challenge = false;
+        table[table.findindexbyabbr(name)].negativefactor = 0.5;
       }
     }
   })
@@ -706,7 +710,7 @@ function resetfactor() {
 
 function kill(teamName)
 {
-  if(Number.isInteger(teamName)) teamName = table[teamName].name;
+  if(Number.isInteger(teamName)) teamName = table[teamName].abbr;
   io.sockets.emit('blackout', teamName);
   table.splice(table.findindexbyabbr(teamName), 1);
   io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
@@ -729,7 +733,7 @@ function addScoreCommand(data)
 
 function judgeSubmit()
 {
-  scoreCommands.forEach(x => manualSetScore(data));
+  scoreCommands.forEach(x => manualSetScore(x));
   if (currentround == "semifinal" && (question.section == 4 || question.section == 8)) {
     if (table[table.length - 1].score != table[table.length - 2].score) {
       kill(table.length - 1);
