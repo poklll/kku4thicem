@@ -199,34 +199,41 @@ function correct(teamnumber)
       document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="green";
      // document.getElementById("status"+teamnumber).style.backgroundColor ="green";
       var name = document.getElementById("team"+teamnumber+"label").innerHTML;
-      var score = parseInt(question.score);
-      setscore(name,score);
+      if(currentround != "sudden death")
+      {
+        var score = parseInt(question.score);
+        setscore(name,score);
+      }
+      else
+      {
+          setscore(name, 0);
+      }
       socket.emit('correct',name);
       socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"green"]);
-      judge--;
-      iscomplete();
 }
 
 function wrong(teamnumber)
 {
     document.getElementById("team"+teamnumber+"panel").style.backgroundColor ="red";
     var name = document.getElementById("team"+teamnumber+"label").innerHTML;
-    var score = 0-parseInt(question.score);
-    setscore(name,score);
+    if(currentround != "sudden death")
+    {
+        var score = -parseInt(question.score);
+        setscore(name,score);
+    }
+    else
+      {
+          setscore(name, -1);
+      }
     socket.emit('wrong',name);
     socket.emit('LEDOn',[table[table.findindexbyabbr(name)].buttonnumber,"red"]);
-    judge--;
-    iscomplete();
 }
 
-function iscomplete()
+function judgeSubmit()
 {
-    if(judge == 0)
-    {   alert(judge);
-        socket.emit('judgecomplete',true);
-
-    }
+    socket.emit('judgeSubmit',true);
 }
+
 function screenshot()
 {
     socket.emit('screenshot',true);

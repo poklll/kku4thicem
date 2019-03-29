@@ -1,7 +1,7 @@
 var table = [];
 var questions = [];
 var question = {};
-
+var showscore = true;
 
 
 
@@ -11,8 +11,6 @@ function init() {
     for (i = 0; i < table.length; i++) {
         addrow(i + 1, table[i].abbr, table[i].score);
     }
-
-
 }
 function addrow(rank, name, score) {
     var tablepanel = document.getElementById("tablepanel");
@@ -45,8 +43,14 @@ function addrow(rank, name, score) {
 
             else
                 if (newrow.childNodes[i].className == "teamscore") {
-                    newrow.childNodes[i].innerHTML = score;
-
+                    if(showscore)
+                    {
+                        newrow.childNodes[i].innerHTML = score;
+                    }
+                    else
+                    {
+                        newrow.childNodes[i].innerHTML = "✔";
+                    }
                 }
 
 
