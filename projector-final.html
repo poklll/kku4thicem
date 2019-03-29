@@ -31,7 +31,6 @@
         onEx(socket, 'setquestion', function (data) {
             question = data;
             resetpanel();
-            judge = table.length;
         });
         onEx(socket, 'round',function(data){roundsetup(data);});
         onEx(socket, 'correct',function(data){
@@ -42,7 +41,7 @@
             document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="red";
         });
       
-        introduce(socket, "proj-left");
+        introduce(socket, "proj-final");
     </script>
 </head>
 
@@ -55,48 +54,39 @@
 
     
 
-    <div class="flex-container">
-        <div class="flex-item" id="team1">
-            <img id="team1img" onclick="fullscreen(this.src)">
+    <div class="flex-container-final">
+        <div class="flex-item-final" id="team1">
+            <img class="final-img" id="team1img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team1panel">
                 <p class="teamlabel" id="team1label"></p>
-                <div class="btn-container">
-                    <button class="btn btn-success correct" onclick="correct(1)">Correct</button>
-                    <button class="btn btn-danger wrong" onclick="wrong(1)">Wrong</button>
-                </div>
             </div>
         </div>
-        <div class="flex-item" id="team2">
-            <img id="team2img" onclick="fullscreen(this.src)">
+        <div class="flex-item-final" id="team2">
+            <img class="final-img" id="team2img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team2panel">
                 <p class="teamlabel" id="team2label"></p>
-                <div class="btn-container">
-                    <button class="btn btn-success correct" onclick="correct(2)">Correct</button>
-                    <button class="btn btn-danger wrong" onclick="wrong(2)">Wrong</button>
-                </div>
             </div>
         </div>
-        <div class="flex-item" id="team3">
-            <img id="team3img" onclick="fullscreen(this.src)">
+        <div class="flex-item-fianl" id="team3">
+            <img class="final-img" id="team3img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team3panel">
                 <p class="teamlabel" id="team3label"></p>
-                <div class="btn-container">
-                    <button class="btn btn-success correct" onclick="correct(3)">Correct</button>
-                    <button class="btn btn-danger wrong" onclick="wrong(3)">Wrong</button>
-                </div>
             </div>
         </div>
-        <div class="flex-item" id="team4">
-            <img id="team4img" onclick="fullscreen(this.src)">
+        <div class="flex-item-final" id="team4">
+            <img class="final-img" id="team4img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team4panel">
                 <p class="teamlabel" id="team4label"></p>
-                <div class="btn-container">
-                    <button class="btn btn-success correct" onclick="correct(4)">Correct</button>
-                    <button class="btn btn-danger wrong" onclick="wrong(4)">Wrong</button>
-                </div>
             </div>
         </div>
-    </div> 
+        <div class="flex-item-final" id="team5">
+                <img class="final-img" id="team5img" onclick="fullscreen(this.src)">
+                <div class="teampanel" id="team5panel">
+                    <p class="teamlabel" id="team5label"></p>
+                </div>
+            </div>
+        </div> 
+    <img class="logo" src="/asset/ICEMinwARM2.svg">
 
 
 </body>

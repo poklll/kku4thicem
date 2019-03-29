@@ -8,11 +8,9 @@ var currentround;
 var button = false;
 function addimage(data)
 {   var index = table.findindexbyabbr(data.name);
-    if(currentround != "final:the fast")
-    {
+   
         var nameimg = "team"+(index+1)+"img";
         document.getElementById(nameimg).src = data.image;
-    }
     document.getElementById("team"+(index+1)+"panel").getElementsByClassName('btn-container')[0].style.visibility = "visible";
 }
 

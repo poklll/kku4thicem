@@ -43,6 +43,9 @@ router.get('/projector-middle', function (req, res) {
 router.get('/projector-right', function (req, res) {
   res.sendFile(path.join(__dirname + '/projector-right.html'));
 });
+router.get('/projector-final', function (req, res) {
+  res.sendFile(path.join(__dirname + '/projector-final.html'));
+});
 app.use('/', router);
 
 //if (process.env.NODE_ENV === 'production') {
@@ -66,8 +69,7 @@ var defaultpositivefactor = 1;
 var defaultnegativefactor = 1;
 var Round = []; //name,rule
 var currentround;
-var Currentteam;
-var socketID = [];
+var challenge =false;
 
 //Init data
 const fs = require('fs');
@@ -292,6 +294,12 @@ var count = function () {
       tickFeedbackDelayCount = 0;
       tickMissing = 0;
       firstTick = true;
+      if(challenge)
+      {
+        time = 10;
+        timerOn = true;
+        challenge = false;
+      }
     }
   }
 }
@@ -665,15 +673,25 @@ io.on('connection', function (socket) {
 
   socket.on('buttonHit', function (data) {
     console.log("button " + data + " was hit!");
+    var name = table.findabbrbybtn(data);
     if (currentround == "resuscitation") {
-      var name = table.findabbrbybtn(data);
       io.sockets.emit('hitsetscore', name);
-
     }
     if(currentround == "final:the fast")
-    {
+    {   if(!challenge)
+      {
         time = 20;
         timerOn = true;
+        io.sockets.emit('addimage',{name:name, image : "/public/asset/answer.PNG"});
+        challenge = true;
+      }
+      else
+      {
+        time = 20;
+        timerOn = true;
+        io.sockets.emit('addimage',{name:name, image : "/public/asset/Challenge.PNG"});
+        challenge = false;
+      }
     }
   })
   socket.on('success', function (data) { console.log(data) });

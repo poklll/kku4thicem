@@ -7,11 +7,8 @@ var judge;
 var currentround;
 function addimage(data)
 {   var index = table.findindexbyabbr(data.name);
-    if(currentround != "final:the fast")
-    {
         var nameimg = "team"+(index+1)+"img";
         document.getElementById(nameimg).src = data.image;
-    }
 }
 
 
@@ -26,10 +23,7 @@ function addimage(data)
         }
     
      }
-     for(var i = 0;i<5;i++)
-     {
-        document.getElementById("team"+(i+1)+"label2").innerHTML = table[i].abbr;
-     }
+
     
 }
 
