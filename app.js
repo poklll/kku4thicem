@@ -366,6 +366,7 @@ console.log = function (data) {
 };
 
 io.on('connection', function (socket) {
+
   socket.on("introduce", function (intro) {
     lock.acquire("socketIntroduction", () => {
       var index = clientEntries.findIndex(x => x.socket == socket);
@@ -535,6 +536,22 @@ io.on('connection', function (socket) {
   socket.on('settimer', function (data) { time = data; });
   socket.on('timerOn', function (data) { 
     timerOn = data;
+    if(!data)
+    {
+      io.sockets.emit('playsound',"stopcountdown");
+      io.sockets.emit('timeup', true);
+      io.sockets.emit('turnOffLedStrip', 0);
+      tickFeedbackImmediateCount = 0;
+      tickFeedbackDelayCount = 0;
+      tickMissing = 0;
+      firstTick = true;
+      if (challengetimer) {
+        time = 10;
+        io.sockets.emit('challenge');
+        //timerOn = true;
+        challengetimer = false;
+      }
+    }
    });
 
 
@@ -578,9 +595,8 @@ io.on('connection', function (socket) {
   //question
 
   socket.on('questionshow', function (data) {
-    if (currentround != "final:the leader") {
-      resetfactor();
-    }
+    resetfactor();
+    challenge = false;
     io.sockets.emit('resetfactor');
     io.sockets.emit("turnOffLedStrip", 0);
     timerOn = false;
@@ -672,6 +688,7 @@ io.on('connection', function (socket) {
         table[table.findindexbyabbr(name)].negativefactor = 0;
       }
       else {
+        timerOn =false;
         time = 20;
         io.sockets.emit('answer');
         //timerOn = true;

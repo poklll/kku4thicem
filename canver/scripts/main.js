@@ -45,7 +45,7 @@ function roundsetup(round) {
   document.getElementById("x3").style.visibility = "inherit";
   if (round == "final:the leader") {
     document.getElementById('leader-selector').style.visibility = "visible";
-    document.getElementsByClassName('flex-head')[0].innerHTML = "Topic 1 : Subgroup 1<br>Select question for your leader!";
+    document.getElementsByClassName('flex-head')[0].innerHTML = "Topic 1 : Toxicology<br>Select question for your leader!";
 
   }
   else {
@@ -101,12 +101,13 @@ function select() {
 
 function selectleader(level) {
   if (currentround == "final:the leader" && leader.length < 2) {
-    leader.push(level.innerHTML);
+
+         leader.push(level.innerHTML);
     level.style.backgroundImage = "url('/asset/leadership.png')";
   }
   if (leader.length == 1) {
     setTimeout(() => {
-      document.getElementsByClassName('flex-head')[0].innerHTML = "Topic 2 : Subgroup 2<br>Select question for your leader!";
+      document.getElementsByClassName('flex-head')[0].innerHTML = "Topic 2 : Environment<br>Select question for your leader!";
       document.getElementById("easy").style.backgroundImage = "none";
       document.getElementById("hard").style.backgroundImage = "none";
     }, 500);

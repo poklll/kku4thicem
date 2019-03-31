@@ -46,9 +46,14 @@
     onEx(socket, 'blackout', function (data) { if (team == data) { blackout(); } });
     onEx(socket, 'setquestion', function (data) {
       question = data;
-      if (question.section == "1-" + leader[0] || question.section == "2-" + leader[1]) {
-        socket.emit('setscorefactor', { type: "Leader", name: team, positive: 2, negative: 2 });
+      if (question.level == leader[0] &&   parseInt(question.section)  < 3) {
+        socket.emit('setscorefactor', { type: "Leader", name: team, positive: 2, negative: 0.5 });
       }
+      else if (question.level == leader[1] &&   parseInt(question.section)  > 2) {
+        socket.emit('setscorefactor', { type: "Leader", name: team, positive: 2, negative: 0.5 });
+      }
+
+
       if (currentround == "semifinal") {
         document.getElementById("helper").style.visibility = "visible";
       }

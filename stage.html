@@ -44,7 +44,7 @@
           document.getElementById("score").innerHTML = "SCORE: " + table[table.findindexbyabbr(team)].score;
         }
          currentround = data.currentround;
-         roundstart(data);
+         roundstart(currentround);
 
     });
     onEx(socket, 'setquestion', function (data) {

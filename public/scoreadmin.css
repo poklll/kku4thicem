@@ -224,13 +224,13 @@ table th:last-child{
 }
 .logoimg
 {
-    width: 50px;
-    height: 50px;
+    width: 90px;
+    height: 90px;
 }
 .flagimg
 {
-    width: 80px;
-    height: 50px;
+    width: 170px;
+    height: 80px;
     border: 2px solid black;
 }
 /* animation */
