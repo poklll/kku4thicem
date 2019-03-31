@@ -33,17 +33,16 @@ function init(data)
     table = data.table;
     question = data.question;
     currentround = data.currentround;
-   
+    if(team)
+    {
+      score = table[table.findindexbyabbr(team)].score;
+    }
+    roundsetup(currentround);
 }
 function roundsetup(round) {
   currentround = round;
-  if (round == "semifinal") {
-    document.getElementById("helper").style.visibility = "visible";
-  }
-  else {
-    document.getElementById("helper").style.visibility = "hidden";
-  }
-
+  document.getElementById("x2").style.visibility = "inherit";
+  document.getElementById("x3").style.visibility = "inherit";
   if (round == "final:the leader") {
     document.getElementById('leader-selector').style.visibility = "visible";
     document.getElementsByClassName('flex-head')[0].innerHTML = "Topic 1 : Subgroup 1<br>Select question for your leader!";
@@ -72,20 +71,13 @@ function eraser() {
 
 
 function showquestion() {
-  var canvas = document.getElementById('canvas');
-  var ctx = canvas.getContext("2d");
-  ctx.font = "30px Impact";
-  ctx.fillStyle = "black";
-  ctx.textAlign = "center";
-  ctx.fillText(question.question, canvas.width / 2, canvas.height / 2);
+
 }
 function screenshot() {
 
   var img = document.getElementById('canvas').toDataURL('image/jpeg', 0.05);
   socket.emit('screensubmit', { image: img, name: team });
-  if (question.section == "1-" + leader[0] || question.section == "2-" + leader[1]) {
-    socket.emit('setscorefactor', { type: "Leader", name: team, positive: 2, negative: 2 });
-  }
+
 }
 
 function resetcanvas() {
@@ -104,6 +96,7 @@ function select() {
   document.getElementById("name").innerHTML = team;
   score = table[table.findindexbyabbr(team)].score;
   introduce(socket, "canver-" + name);
+
 }
 
 function selectleader(level) {
@@ -143,11 +136,13 @@ function setdropdown() {
 function x2() {
   socket.emit('setscorefactor', { type: "x2", name: team, positive: 2, negative: 0.5 });
   document.getElementById("x2").style.visibility = "hidden";
+  document.getElementById("helper").style.visibility = "hidden";
 }
 
 function x3() {
   socket.emit('setscorefactor', { type: "x3", name: team, positive: 3, negative: 1 });
   document.getElementById("x3").style.visibility = "hidden";
+  document.getElementById("helper").style.visibility = "hidden";
 }
 
 function blackout() {
@@ -178,7 +173,7 @@ function setscore(data) {
 function selectscore(item,score) {
   var scoreselection = document.getElementById("score-selection");
   socket.emit('setquestionscore', score);
-  alert("this question's score was set to "+score);
+  //alert("this question's score was set to "+score);
   scoreselection.style.visibility = "hidden";
 }
 Array.prototype.findindexbyabbr = function (name) {

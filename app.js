@@ -3,13 +3,17 @@ const path = require("path");
 const omit = require('object.omit');
 const app = express();
 const router = express.Router();
+
+ 
+
 var http = require('http').Server(app);
 app.use('/asset', express.static(path.join(__dirname, 'public/asset')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/canver', express.static(path.join(__dirname, 'canver')));
 app.use('/logo', express.static(path.join(__dirname, 'public/asset/Logo')));
 app.use('/flag', express.static(path.join(__dirname, 'public/asset/Flag')));
-
+app.use('/question', express.static(path.join(__dirname, 'public/asset/Question')));
+app.use('/sound', express.static(path.join(__dirname, 'public/asset/Sound')));
 router.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
 });
@@ -46,6 +50,9 @@ router.get('/projector-right', function (req, res) {
 router.get('/projector-final', function (req, res) {
   res.sendFile(path.join(__dirname + '/projector-final.html'));
 });
+router.get('/soundplayer', function (req, res) {
+  res.sendFile(path.join(__dirname + '/soundplayer.html'));
+});
 app.use('/', router);
 
 //if (process.env.NODE_ENV === 'production') {
@@ -57,6 +64,7 @@ app.use('/', router);
 
 var io = require('socket.io')(http);
 var table = []; //abbr,name,country,score
+var consttable = [];
 var questions = []; //section,question,score,time
 var semifinalquestion = [];
 var resuscitationquestion = [];
@@ -69,9 +77,10 @@ var defaultpositivefactor = 1;
 var defaultnegativefactor = 1;
 var Round = []; //name,rule
 var currentround;
-var challenge =false;
-var challengetimer =false;
-
+var challenge = false;
+var challengetimer = false;
+var openquestion = false;
+var judge =false;
 //Init data
 const fs = require('fs');
 const readline = require('readline');
@@ -146,6 +155,7 @@ function readsheet(auth) {
         // console.log(`${row[0]} , ${row[1]} , ${row[2]} , ${row[3]}`);
 
       });
+      consttable = table;
       // console.log(table);
       //console.log(table.findindexbyabbr('KKU1'));
     } else {
@@ -274,34 +284,57 @@ var tickFeedbackImmediateCount = 0;
 var tickFeedbackDelayCount = 0;
 var tickMissing = 0;
 var firstTick = true;
-var teamCount = 9;
+var teamCount = 0;
 var count = function () {
-  if (timerOn) {
-    if (time > 0) {
-      time--;
-      if (!firstTick) tickMissing += teamCount - tickFeedbackImmediateCount - tickFeedbackDelayCount;
-      console.log("Tick! [" + time + "] (on-time: " + tickFeedbackImmediateCount + ", delay: " + tickFeedbackDelayCount + ", missing: " + tickMissing + ")");
-      tickFeedbackImmediateCount = 0;
-      tickFeedbackDelayCount = 0;
-      io.sockets.emit('tick', time);
-      firstTick = false;
-    }
-    else {
-      timerOn = false;
-      io.sockets.emit('screenshot', true);
-      io.sockets.emit('clearcanvas', true);
-      io.sockets.emit('timeup', true);
-      tickFeedbackImmediateCount = 0;
-      tickFeedbackDelayCount = 0;
-      tickMissing = 0;
-      firstTick = true;
-      if(challengetimer)
-      { 
-        time = 10;
-        timerOn = true;
-        challengetimer = false;
+  try{
+    if (timerOn) {
+      if (time > 0) {
+        time--;
+        if (!firstTick) tickMissing += teamCount - tickFeedbackImmediateCount - tickFeedbackDelayCount;
+        console.log("Tick! [" + time + "] (on-time: " + tickFeedbackImmediateCount + ", delay: " + tickFeedbackDelayCount + ", missing: " + tickMissing + ")");
+        tickFeedbackImmediateCount = 0;
+        tickFeedbackDelayCount = 0;
+        io.sockets.emit('tick', time);
+        firstTick = false;
+        if(time ==10 && openquestion)
+        {
+          io.sockets.emit('playsound',"countdown");
+          io.sockets.emit('turnOnLedStrip', "0,redblink");
+        }
+      }
+      else {
+        timerOn = false;
+        io.sockets.emit('playsound',"stopcountdown");
+        if (openquestion) {
+          if (currentround != "final:the fast") {
+            //io.sockets.emit('screenshot', true);
+            //io.sockets.emit('clearcanvas', true);
+            io.sockets.emit('screenshot-clearcanvas');
+          }
+  
+        }
+        else {
+          io.sockets.emit('closehelper');
+        }
+        io.sockets.emit('timeup', true);
+        io.sockets.emit('turnOffLedStrip', 0);
+        tickFeedbackImmediateCount = 0;
+        tickFeedbackDelayCount = 0;
+        tickMissing = 0;
+        firstTick = true;
+        if (challengetimer) {
+          time = 10;
+          io.sockets.emit('challenge');
+          //timerOn = true;
+          challengetimer = false;
+        }
+  
       }
     }
+  }
+  catch (e)
+  {
+    console.log(e);
   }
 }
 
@@ -373,6 +406,9 @@ io.on('connection', function (socket) {
           else if (x.warning) socket.emit("warningClient", x.id, true);
         });
       }
+      else if (intro.startsWith("stage") || intro == "proj-mid") {
+        teamCount++;
+      }
 
       entry.pingTime = Date.now();
       socket.emit('manual-ping');
@@ -404,6 +440,9 @@ io.on('connection', function (socket) {
           x.socket.emit("grayoutClient", clientEntries[index].id);
         }
       });
+      if (clientEntries[index].introduction.startsWith("stage") || clientEntries[index].introduction == "proj-mid") {
+        teamCount--;
+      }
       setTimeout(() => {
         lock.acquire("socketIntroduction", () => {
           var index = clientEntries.findIndex(x => x.socket == socket);
@@ -471,9 +510,9 @@ io.on('connection', function (socket) {
   });
 
   //init
-  socket.emit('init', { table: table, questions: questions, currentroun: currentround, question: question });
+  socket.emit('init', { table: table, questions: questions, currentround: currentround, question: question });
   socket.emit('setteamlist', table);
-  socket.emit('tester',table);
+  socket.emit('tester', consttable);
   //io.sockets.emit('setquestion', question);
   io.sockets.emit('setround', Round);
   //reset
@@ -494,13 +533,16 @@ io.on('connection', function (socket) {
 
   //timer
   socket.on('settimer', function (data) { time = data; });
-  socket.on('timerOn', function (data) { timerOn = data; });
+  socket.on('timerOn', function (data) { 
+    timerOn = data;
+   });
 
 
   //round
   socket.on('roundstart', function (data) {
     currentround = data;
     console.log("round was set to " + currentround);
+    io.sockets.emit("turnOffLedStrip", 0);
     roundsetup(currentround);
     io.sockets.emit('round', data);
     io.sockets.emit('setquestionlist', questions);
@@ -522,6 +564,7 @@ io.on('connection', function (socket) {
   });
   socket.on('openquestion', function (data) {
     io.sockets.emit('openquestion', data);
+    openquestion = true;
     time = (question.time);
   });
   socket.on('openanswer', function () {
@@ -535,23 +578,24 @@ io.on('connection', function (socket) {
   //question
 
   socket.on('questionshow', function (data) {
-    if(currentround != "final:the leader")
-    {
+    if (currentround != "final:the leader") {
       resetfactor();
     }
+    io.sockets.emit('resetfactor');
+    io.sockets.emit("turnOffLedStrip", 0);
     timerOn = false;
     question = data;
     io.sockets.emit('setquestion', data);
-    if(currentround == "semifinal")
-    {
-         time = 10;
+    if (currentround == "semifinal") {
+      time = 10;
     }
-    
+    openquestion = false;
+    io.sockets.emit('openscoreboard');
   });
   socket.on('setquestionscore', function (data) {
     question.score = data;
     io.sockets.emit('setquestion', question);
-    console.log(currentround +" "+question.section + " score was set to " + data);
+    console.log(currentround + " " + question.section + " score was set to " + data);
   });
 
   //team
@@ -564,12 +608,14 @@ io.on('connection', function (socket) {
   });
 
   socket.on('screensubmit', function (data) {
-    socket.broadcast.emit('addimage', data);
-    socket.emit('addimage', data);
+    io.sockets.emit('openanswerprojector',data);
+    setTimeout(() => {
+      io.sockets.emit('addimage', data);
+    }, 2000);
   });
   socket.on('screenshot', function () { io.sockets.emit('screenshot', true); });
   socket.on('correct', function (data) { io.sockets.emit('correct', data) });
-  socket.on('wrong', function (data) { 
+  socket.on('wrong', function (data) {
     io.sockets.emit('wrong', data);
 
   });
@@ -586,12 +632,10 @@ io.on('connection', function (socket) {
 
   socket.on('setscore', function (data) {
     var index = table.findindexbyabbr(data.name);
-    if(currentround == "sudden death")
-    {
+    if (currentround == "sudden death") {
       //pass data.score as it is.
     }
-    else
-    {
+    else {
       var sum;
       if (data.score > 0) { //if correct
         data.score = parseInt(data.score) * parseInt(table[index].positivefactor);
@@ -599,54 +643,59 @@ io.on('connection', function (socket) {
       else {
         data.score = parseInt(data.score) * parseFloat(table[index].negativefactor);
       }
-      addScoreCommand(data);
     }
+    addScoreCommand(data);
   });
 
   socket.on('manual-setscore', function (data) {
     manualSetScore(data);
   });
 
-  socket.on('kill',function(data){
+  socket.on('kill', function (data) {
     kill(data.name);
   });
 
   socket.on('buttonHit', function (data) {
+    io.sockets.emit('playsound',"buttonhit");
     console.log("button " + data + " was hit!");
     var name = table.findabbrbybtn(data);
     if (currentround == "resuscitation") {
       io.sockets.emit('hitsetscore', name);
     }
-    if(currentround == "final:the fast")
-    {   if(!challenge)
-      {
+    if (currentround == "final:the fast") {
+      if (!challenge) {
         time = 20;
-        timerOn = true;
-        io.sockets.emit('addimage',{name:name, image : "/public/asset/answer.PNG"});
+        //timerOn = true;
+        io.sockets.emit('addimage', { name: name, image: "/public/asset/answer.PNG" });
         challenge = true;
         challengetimer = true;
         table[table.findindexbyabbr(name)].negativefactor = 0;
       }
-      else
-      {
+      else {
         time = 20;
-        timerOn = true;
-        io.sockets.emit('addimage',{name:name, image : "/public/asset/Challenge.PNG"});
+        io.sockets.emit('answer');
+        //timerOn = true;
+        io.sockets.emit('addimage', { name: name, image: "/public/asset/Challenge.PNG" });
         challenge = false;
         table[table.findindexbyabbr(name)].negativefactor = 0.5;
       }
     }
   })
-  socket.on('success', function (data) { console.log(data) });
+  socket.on('success', function (data) { console.log(data + " success"); });
   socket.on('sirenOn', function (data) { socket.broadcast.emit('turnOnSiren', data) });
   socket.on('sirenOff', function (data) { socket.broadcast.emit('turnOffSiren', data) });
-  socket.on('buttonOn', function (data) { socket.broadcast.emit('enableButton', data) });
+  socket.on('buttonOn', function (data) { 
+    socket.broadcast.emit('enableButton', data);
+    socket.broadcast.emit('playsound', "enableButton");
+  });
   socket.on('buttonOff', function (data) { socket.broadcast.emit('disableButton', data) });
   socket.on('LEDOn', function (data) { socket.broadcast.emit('turnOnLedStrip', (data[0] + "," + data[1])); });
   socket.on('LEDOff', function (data) { socket.broadcast.emit('turnOffLedStrip', parseInt(data)); });
   socket.on('ForceLEDOff', function (data) { socket.broadcast.emit('forceTurnOffLedStrip', data); });
-
-
+  socket.on('runControllerTest', () => clientEntries.filter(x => x.introduction == "controller")
+    .forEach(x => x.socket.emit("runTest")));
+  socket.on('stopControllerTest', () => clientEntries.filter(x => x.introduction == "controller")
+    .forEach(x => x.socket.emit("stopTest")));
 });
 
 function reload() {
@@ -665,10 +714,12 @@ function roundsetup(round) {
     case "semifinal":
       questions = semifinalquestion;
       resetscore(0);
+      defaultnegativefactor = 0;
       break;
     case "resuscitation":
       questions = resuscitationquestion;
       resetscore(50);
+      defaultnegativefactor = 1;
       break;
     case "sudden death":
       questions = suddendeathquestion;
@@ -681,6 +732,7 @@ function roundsetup(round) {
     case "final:the leader":
       questions = finalleaderquestion;
       resetscore(0);
+      defaultnegativefactor = 0;
       break;
     case "final:the error detector":
       questions = finalerrorquestion;
@@ -697,7 +749,7 @@ function resetscore(score) {
   table.map((team) => {
     team.score = score;
   });
-  io.sockets.emit('init', { table: table, questions: questions, showscore: currentround != "sudden death" });
+  io.sockets.emit('init', { table: table, questions: questions });
 }
 
 function resetfactor() {
@@ -705,69 +757,71 @@ function resetfactor() {
     team.positivefactor = defaultpositivefactor;
     team.negativefactor = defaultnegativefactor;
   });
-  io.sockets.emit('init', { table: table, questions: questions });
+  io.sockets.emit('init', { table: table, questions: questions ,currentround:currentround,question:question});
+  io.sockets.emit('resetfactor');
 }
 
-function kill(teamName)
-{
-  if(Number.isInteger(teamName)) teamName = table[teamName].abbr;
+function kill(teamName) {
+  if (Number.isInteger(teamName)) teamName = table[teamName].abbr;
   io.sockets.emit('blackout', teamName);
   table.splice(table.findindexbyabbr(teamName), 1);
-  io.sockets.emit('init', { table: table, questions: questions, currentround:currentround ,question: question});
-  console.log(teamName+" is eliminated.");
+  io.sockets.emit('init', { table: table, questions: questions, currentround: currentround, question: question });
+  console.log(teamName + " is eliminated.");
 }
 
 var scoreCommands = [];
-function addScoreCommand(data)
-{
+function addScoreCommand(data) {
   var i;
-  if((i = scoreCommands.findIndex(x => x.name == data.name)) != -1)
-  {
+  if ((i = scoreCommands.findIndex(x => x.name == data.name)) != -1) {
     scoreCommands[i].score = data.score;
   }
-  else
-  {
+  else {
     scoreCommands.push(data);
   }
 }
 
-function judgeSubmit()
-{
+function judgeSubmit() {
+ 
+    io.sockets.emit('openscoreboard');
+    setTimeout(() => {
+    
+    }, 2000);
+  
+  if(currentround == "resuscitation" && scoreCommands.filter(x => x.score < 0).length == 8) return;
   scoreCommands.forEach(x => manualSetScore(x));
   if (currentround == "semifinal" && (question.section == 4 || question.section == 8)) {
     if (table[table.length - 1].score != table[table.length - 2].score) {
       kill(table.length - 1);
     }
   }
+  else if (currentround == "resuscitation" || currentround == "sudden death") {
+    var eliminate = table.filter(x => x.score <= 0).forEach(x => kill(x.abbr));
+  }
+
   scoreCommands.length = 0; //clear array
 }
 
-function manualSetScore(data)
-{
+function manualSetScore(data) {
   var index = table.findindexbyabbr(data.name);
-    var sum;
-    if (data.score > 0) {
-      sum = parseInt(table[index].score) + parseInt(data.score) ;
-    }
-    else {
-      sum = parseFloat(table[index].score) + parseInt(data.score);
-    }
-    //resuscitation
-    if ((currentround == "resuscitation" || currentround == "sudden death") && sum <= 0) {
-      kill(data.name);
-    } else {
-      var previousposition = index;
-      table[index].score = sum;
-      table.sort(function (a, b) {
-        return b.score - a.score;
-      });
-      var newposition = table.findindexbyabbr(data.name);
-      console.log(data.score + " score was added to " + data.name);
-      console.log(data.name+" score: "+sum);
-      console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
-      io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
-      io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
-    }
+  var sum;
+  if (data.score > 0) {
+    sum = parseInt(table[index].score) + parseInt(data.score);
+  }
+  else {
+    sum = parseFloat(table[index].score) + parseInt(data.score);
+  }
+  //resuscitation
+  var previousposition = index;
+  table[index].score = sum;
+  table.sort(function (a, b) {
+    return b.score - a.score;
+  });
+  var newposition = table.findindexbyabbr(data.name);
+  console.log(data.score + " score was added to " + data.name);
+  console.log(data.name + " score: " + sum);
+  console.log("Scoreboard: position change from: " + previousposition + " to " + newposition);
+  io.sockets.emit('scorechange', { datatable: table, name: data.name, score: sum });
+  io.sockets.emit('positionchange', { from: previousposition, to: newposition, datatable: table });
 }
 
 Number.prototype.pad = function (size) {

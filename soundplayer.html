@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>4th ICEM</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src='/socket.io/socket.io.js'></script>
+</head>
+<script>
+    var socket = io();
+    var button;
+    var count;
+    window.addEventListener('DOMContentLoaded', (event) => {
+        button = document.getElementById("buttonhit");
+        count = document.getElementById("countdown");
+        enablebutton = document.getElementById("enablebutton");
+});
+
+    socket.on('playsound',function(data){   
+        if(data == "buttonhit")
+         {
+             buttonhit();
+         }
+         if(data == "countdown")
+         {
+             countdown();
+         }
+         if(data == "stopcountdown")
+         {
+             stopCountdown();
+         }
+         if(data == "enableButton")
+         {
+             enablebtn();
+         }
+    });
+    function buttonhit()
+    {   
+        button.play();
+        setTimeout(() =>{
+            button.pause();
+            button.currentTime = 0;
+        } , 3500);
+    }
+    function countdown()
+    {   
+        count.play();
+    }
+    function stopCountdown()
+    {
+        count.pause();
+        count.currentTime = 0;
+    }
+    function enablebtn()
+    {
+        enablebutton.play();
+        setTimeout(() =>
+        {
+            enablebutton.pause();
+            enablebutton.currentTime = 0;
+        }, 1000);
+    }
+</script>
+<body>
+    <audio id="countdown" src="/sound/countdown.wav" type="audio/wav">
+    </audio>
+    <audio id="buttonhit" src="/sound/hit.mp3" type="audio/mpeg">
+    </audio>  
+    <audio id="enablebutton" src="/sound/enablebutton.mp3" type="audio/mpeg">
+    </audio> 
+    <button onclick="buttonhit()"></button>
+    
+</body>
+
+</html>

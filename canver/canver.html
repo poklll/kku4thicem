@@ -36,18 +36,31 @@
     var socket = io();
     socket.intro = 'canver';
     onEx(socket, 'screenshot', function () { screenshot(); });
-    onEx(socket, 'init', function(){init(data);});
-    onEx(socket, 'setteamlist', function (data) { table = data; setdropdown();  });
+    onEx(socket, 'init', function () { init(data); });
+    onEx(socket, 'setteamlist', function (data) { table = data; setdropdown(); });
     onEx(socket, 'clearcanvas', function () { resetcanvas() });
+    onEx(socket, 'screenshot-clearcanvas', () => {
+      screenshot();
+      resetcanvas();
+    });
     onEx(socket, 'blackout', function (data) { if (team == data) { blackout(); } });
     onEx(socket, 'setquestion', function (data) {
       question = data;
+      if (question.section == "1-" + leader[0] || question.section == "2-" + leader[1]) {
+        socket.emit('setscorefactor', { type: "Leader", name: team, positive: 2, negative: 2 });
+      }
+      if (currentround == "semifinal") {
+        document.getElementById("helper").style.visibility = "visible";
+      }
     });
     onEx(socket, 'openquestion', function () {
       if (currentround == "final:the error detector") {
         showquestion();
+
       }
+
     });
+    onEx(socket, 'closehelper', function () { document.getElementById("helper").style.visibility = "hidden"; });
     onEx(socket, 'round', function (data) { roundsetup(data); });
     onEx(socket, 'scorechange', function (data) {
       table = data.datatable;
@@ -56,7 +69,6 @@
     onEx(socket, 'hitsetscore', function (data) {
       setscore(data);
     });
-
   </script>
 </head>
 
@@ -142,9 +154,7 @@
       <!--<div class='tool' data-toolname='finger'>☛</div>-->
     </div>
     <div class='separator'></div>
-    <button onclick="resetcanvas()" ontouchstart="resetcanvas()">Reset</button>
-    <div id='reset'></div>
-    <div id='saving'></div>
+    <button onclick="resetcanvas()" ontouchstart="resetcanvas()" id="reset"></button>
   </div>
   <div id='backgroundSetup'>
     <div id='setBgBlack' class='bgSelect' data-color='#000'></div>

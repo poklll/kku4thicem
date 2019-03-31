@@ -26,13 +26,15 @@
     <link rel="stylesheet" href="public/animate.css">
     <script>
         var socket = io();
+        window.name = "projector-final";
         onEx(socket, 'addimage', function (data) { addimage(data); });
-        onEx(socket, 'init', function (data) { table = data.table; questions = data.questions; init(); });
+        onEx(socket, 'tester', function (data) { table = data; init(); });
         onEx(socket, 'setquestion', function (data) {
             question = data;
             resetpanel();
         });
-        onEx(socket, 'round',function(data){roundsetup(data);});
+        socket.on('blackout',function(name){ blackout(name);});
+        onEx(socket, 'openscoreboard', function () { window.location = "/user"; });
         onEx(socket, 'correct',function(data){
             
             document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="green";
@@ -40,7 +42,6 @@
         onEx(socket, 'wrong',function(data){
             document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="red";
         });
-      
         introduce(socket, "proj-final");
     </script>
 </head>
@@ -56,7 +57,7 @@
 
     <div class="flex-container-final">
         <div class="flex-item-final" id="team1">
-            <img class="final-img" id="team1img" onclick="fullscreen(this.src)">
+            <img  class="final-img" id="team1img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team1panel">
                 <p class="teamlabel" id="team1label"></p>
             </div>

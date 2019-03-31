@@ -1,7 +1,7 @@
 var table = [];
 var questions = [];
 var question = {};
-var showscore = true;
+var currentround = null; 
 
 
 
@@ -11,6 +11,8 @@ function init() {
     for (i = 0; i < table.length; i++) {
         addrow(i + 1, table[i].abbr, table[i].score);
     }
+    
+   
 }
 function addrow(rank, name, score) {
     var tablepanel = document.getElementById("tablepanel");
@@ -41,9 +43,8 @@ function addrow(rank, name, score) {
 
             }
 
-            else
-                if (newrow.childNodes[i].className == "teamscore") {
-                    if(showscore)
+            else if (newrow.childNodes[i].className == "teamscore") {
+                    if(currentround != 'sudden death')
                     {
                         newrow.childNodes[i].innerHTML = score;
                     }
@@ -221,4 +222,8 @@ function cleartable() {
     table.innerHTML = '';
 }
 
-
+function back()
+{
+    window.open("",window.opener.name);
+    //alert("hello");
+}

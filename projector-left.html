@@ -26,14 +26,17 @@
     <link rel="stylesheet" href="public/animate.css">
     <script>
         var socket = io();
+        window.name = "projector-left";
         onEx(socket, 'addimage', function (data) { addimage(data); });
-        onEx(socket, 'init', function (data) { table = data.table; questions = data.questions; init(); });
+        onEx(socket, 'tester', function (data) { table = data; init(); });
         onEx(socket, 'setquestion', function (data) {
             question = data;
             resetpanel();
-            judge = table.length;
+            
         });
-        onEx(socket, 'round',function(data){roundsetup(data);});
+        socket.on('blackout',function(name){ blackout(name);});
+        onEx(socket, 'openscoreboard', function () { window.location = "/user"; });
+       
         onEx(socket, 'correct',function(data){
             
             document.getElementById("team"+(table.findindexbyabbr(data)+1)+"panel").style.backgroundColor ="green";
@@ -46,7 +49,7 @@
     </script>
 </head>
 
-<body>
+<body onclick="back()">
 
     <div id="fullscreen">
         <img id="selected">
@@ -56,25 +59,25 @@
 
     <div class="flex-container">
         <div class="flex-item" id="team1">
-            <img id="team1img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team1img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team1panel">
                 <p class="teamlabel" id="team1label"></p>
             </div>
         </div>
         <div class="flex-item" id="team2">
-            <img id="team2img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team2img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team2panel">
                 <p class="teamlabel" id="team2label"></p>
             </div>
         </div>
         <div class="flex-item" id="team3">
-            <img id="team3img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team3img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team3panel">
                 <p class="teamlabel" id="team3label"></p>
             </div>
         </div>
         <div class="flex-item" id="team4">
-            <img id="team4img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team4img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team4panel">
                 <p class="teamlabel" id="team4label"></p>
             </div>

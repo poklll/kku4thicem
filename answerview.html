@@ -26,13 +26,16 @@
         var pauseConsole = false;
         var socket = io();
         socket.on('addimage', function (data) { addimage(data); });
-        socket.on('init', function (data) { table = data.table; questions = data.questions; init(); });
+        socket.on('init', function (data) {  questions = data.questions; });
+        socket.on('tester', function (data) { table = data; setpanel(); init(); });
         socket.on('setquestion', function (data) {
         question = data;
         console.log(question);
         resetpanel();
         judge = table.length;
+        
     });
+        socket.on('blackout',function(name){ blackout(name);});
         socket.on('setquestionlist', function(data){questions = data; init();});
         socket.on('round',function(data){roundsetup(data);});
         socket.on('timeup',function(){
@@ -117,9 +120,8 @@
                             <button class="btn btn-success" id="toggletimer" onclick="timerOn()">start timer</button>
                             <button class="btn btn-warning" id="screenshot" onclick="screenshot()">screenshot</button>
                             <button class="btn btn-light" id="resetcanvas" onclick="resetcanvas()">reset screens</button>
-                            <button class="btn btn-light" id="resetcanvas" onclick="resetcanvas()">start challenge</button>
                             <button id="enableButton" class="btn btn-secondary" onclick="enablebutton()">Button disabled</button>
-                            <button id="enableButton" class="btn btn-secondary" onclick="socket.emit('judgeSubmit')">Submit score</button>
+                            <button id="judgesubmit" class="btn btn-secondary" onclick="socket.emit('judgeSubmit')">Submit score</button>
                         </div>
 
                     </div>
@@ -148,7 +150,7 @@
             
     <div class="flex-container">
         <div class="flex-item" id="team1">
-            <img id="team1img" onclick="fullscreen(this.src)">
+            <img class="teamimg"id="team1img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team1panel">
                 <p class="teamlabel" id="team1label"></p>
                 <div class="btn-container">
@@ -158,7 +160,7 @@
             </div>
         </div>
         <div class="flex-item" id="team2">
-            <img id="team2img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team2img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team2panel">
                 <p class="teamlabel" id="team2label"></p>
                 <div class="btn-container">
@@ -168,7 +170,7 @@
             </div>
         </div>
         <div class="flex-item" id="team3">
-            <img id="team3img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team3img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team3panel">
                 <p class="teamlabel" id="team3label"></p>
                 <div class="btn-container">
@@ -178,7 +180,7 @@
             </div>
         </div>
         <div class="flex-item" id="team4">
-            <img id="team4img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team4img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team4panel">
                 <p class="teamlabel" id="team4label"></p>
                 <div class="btn-container">
@@ -188,7 +190,7 @@
             </div>
         </div>
         <div class="flex-item" id="team5">
-            <img id="team5img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team5img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team5panel">
                 <p class="teamlabel" id="team5label"></p>
                 <div class="btn-container">
@@ -198,7 +200,7 @@
             </div>
         </div>
         <div class="flex-item" id="team6">
-            <img id="team6img" onclick="fullscreen(this.src)">
+            <img   class="teamimg" id="team6img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team6panel">
                 <p class="teamlabel" id="team6label"></p>
                 <div class="btn-container">
@@ -208,7 +210,7 @@
             </div>
         </div>
         <div class="flex-item" id="team7">
-            <img id="team7img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team7img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team7panel">
                 <p class="teamlabel" id="team7label"></p>
                 <div class="btn-container">
@@ -218,7 +220,7 @@
             </div>
         </div>
         <div class="flex-item" id="team8">
-            <img id="team8img" onclick="fullscreen(this.src)">
+            <img  class="teamimg" id="team8img" onclick="fullscreen(this.src)">
             <div class="teampanel" id="team8panel">
                 <p class="teamlabel" id="team8label"></p>
                 <div class="btn-container">

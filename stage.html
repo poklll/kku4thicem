@@ -26,10 +26,26 @@
     var socket = io();
     var question = {};
     socket.intro = "stage";
-    
-    onEx(socket, 'tick', function (time) { 
+ 
+    onEx(socket, 'tick', function (time) {
       document.getElementById("clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2);
-      document.getElementById("helper-clock").innerHTML = Math.floor(time / 60) + "." + (time % 60).pad(2); 
+    });
+    onEx(socket, 'challenge', function () {
+      document.getElementById("clock").innerHTML = "00.10";
+    });
+    onEx(socket, 'answer', function () {
+      document.getElementById("clock").innerHTML = "00.20";
+    });
+    onEx(socket, 'init', function (data) {
+        table  = data.table;
+        if(team)
+        {
+          score = table[table.findindexbyabbr(team)].score;
+          document.getElementById("score").innerHTML = "SCORE: " + table[table.findindexbyabbr(team)].score;
+        }
+         currentround = data.currentround;
+         roundstart(data);
+
     });
     onEx(socket, 'setquestion', function (data) {
       question = data;
@@ -38,28 +54,39 @@
       document.getElementById("body").style.backgroundColor = "white";
       var questioninfo;
       if (data.level == undefined && data.score == undefined) {
-        questioninfo = currentround + " " + question.section + "<br>"+"Time: " + tomin(data.time) + " min";
+        questioninfo = currentround + " " + question.section + "<br>" + "Time: " + tomin(data.time) + " min";
       }
       else
         if (data.level == undefined) {
-          questioninfo = currentround + " " + question.section + "<br>"+"Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
+          questioninfo = currentround + " " + question.section + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
         }
         else
           if (data.score == undefined) {
-            questioninfo = currentround + " " + question.section + "<br>"+"Level: " + data.level + "<br>" + "Time: " + tomin(data.time) + " min";
+            questioninfo = currentround + " " + question.section + "<br>" + "Level: " + data.level + "<br>" + "Time: " + tomin(data.time) + " min";
           }
           else {
-            questioninfo = currentround + " " + question.section + "<br>"+"Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
+            questioninfo = currentround + " " + question.section + "<br>" + "Level: " + data.level + "<br>" + "Score: " + data.score + "<br>" + "Time: " + tomin(data.time) + " min";
 
           }
       document.getElementById("question-info-text").innerHTML = questioninfo;
-      
-      document.getElementById("head").innerHTML = currentround + " " + data.section;
-      document.getElementById("text").innerHTML = data.question;
-     
+      //document.getElementById("head").innerHTML = (currentround + " " + data.section).toUpperCase();
+      //document.getElementById("text").innerHTML = data.question;
+
+      let image= "url('/question/"+roundname+question.section+".jpg')";
+      $("#body").css("background-image", image);
+      if(currentround == "semifinal")
+      {
+        document.getElementById("clock").innerHTML = "00.10";
+      }
+      else
+      {
+        document.getElementById("clock").innerHTML = "";
+      }
     });
+    onEx(socket, 'setscorefactor', function (data) { factoreffect(data); });
+    onEx(socket, 'resetfactor', function () { resetfactor(); });
     onEx(socket, 'setteamlist', function (data) { table = data; setdropdown(); });
-    onEx(socket, 'scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "Score: " + table[table.findindexbyabbr(team)].score; });
+    onEx(socket, 'scorechange', function (data) { table = data.datatable; document.getElementById("score").innerHTML = "SCORE: " + table[table.findindexbyabbr(team)].score; });
     onEx(socket, 'round', function (data) { roundstart(data); });
     onEx(socket, 'openquestion', function (data) { openquestion(); });
     onEx(socket, 'openanswer', function (data) { openanswer(); });
@@ -69,8 +96,12 @@
   </script>
 </head>
 
-<body id="body">
+<body id="body" ondblclick="fullscreen()">
   <div id="blackout"></div>
+  <div id="fullscreen">
+    <img id="selected">
+    <img id="cancel" src="asset/cancel.png" onclick="cancel()">
+  </div>
   <div id="teamselectionmenu">
     <div id="pageturner" class="carousel slide" data-interval="false">
       <div class="carousel-inner">
@@ -98,13 +129,12 @@
   <div class="teambar">
     <div class="teamname" id="teamname"></div>
     <div class="score" id="score"></div>
+    <div class="factor" id="factor"></div>
   </div>
 
   <div class="header" id="head"></div>
   <div class="question" id="text"></div>
   <div class="timer" id="clock"></div>
-  <div id="helper-timer"></div>
-  <img style="height: 30vh;width: 10vw; position: fixed; z-index: 7; align-self: flex-end; margin-top: 45vh; margin-right: 10px; "src="/asset/ICEMinwARM2.svg">
 </body>
 
 </html>

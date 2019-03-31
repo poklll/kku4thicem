@@ -160,7 +160,10 @@
             <button id="LEDoff" class="btn btn-danger" onclick="LEDoff()">turn off LED</button>
             <button id="ForceLEDoff" class="btn btn-dark" onclick="ForceLEDoff()">force turn off LED</button>
           </div>
-
+          <div class="buttonpanel" id="ControllerTest">
+              <button class="btn btn-success" onclick="socket.emit('runControllerTest');">Run Test</button>
+              <button class="btn btn-danger" onclick="socket.emit('stopControllerTest');">Stop Test</button>
+              </div>
         </div>
       </div>
       <div class="carousel-item">

@@ -67,10 +67,10 @@ html {
 }
 
 .teamlabel {
-    font-size: 50px;
+    font-size: 80px;
     text-align: center;
-    font-family: Impact;
-    color: white;
+    font-family: monospace;
+    color: black;
     vertical-align: middle;
     margin: 0;
 }

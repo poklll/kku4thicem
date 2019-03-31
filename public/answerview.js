@@ -9,8 +9,8 @@ var button = false;
 function addimage(data)
 {   var index = table.findindexbyabbr(data.name);
    
-        var nameimg = "team"+(index+1)+"img";
-        document.getElementById(nameimg).src = data.image;
+    var nameimg = "team"+(index+1)+"img";
+    document.getElementById(nameimg).src = data.image;
     document.getElementById("team"+(index+1)+"panel").getElementsByClassName('btn-container')[0].style.visibility = "visible";
 }
 
@@ -18,31 +18,22 @@ function addimage(data)
     function init()
 {   
      setdropdown();
-     setqeustionlist();
+     setqeustionlist();   
+}
 
+function setpanel()
+{
+    for(var i = 0;i<table.length;i++)
+    {
+       document.getElementById("team"+(i+1)+"label").innerHTML = table[i].abbr;
 
-    
-     for(var i = 0;i<table.length;i++)
-     {
-        document.getElementById("team"+(i+1)+"label").innerHTML = table[i].abbr;
-
-     }
-    
-     
+    }
 }
 
 function roundsetup(round)
 {
      currentround = round;
-     if(currentround == "final:the fast")
-     {
-        $("#resetcanvas,#screenshot").css("visibility","hidden");
-     }
-     else
-     {
-        $("#resetcanvas,#screenshot").css("visibility","visible");
-     }
-
+  
 
 }
 
@@ -241,16 +232,16 @@ function screenshot()
 function resetpanel()
 {   var i;
     var teampanel = document.getElementsByClassName("teampanel");
+    var teamimg = document.getElementsByClassName("teamimg");
     for(i=0;i<teampanel.length;i++)
+    {   if(teampanel[i].style.backgroundColor != "black")
     {
         teampanel[i].style.backgroundColor = "cornflowerblue";
+        teampanel[i].getElementsByClassName('btn-container')[0].style.visibility = "hidden";
+        teamimg[i].src = "";
+
     }
-    var status= document.getElementsByClassName("status");
-    for(i=0;i<status.length;i++)
-    {
-        status[i].style.backgroundColor = "white";
     }
-    //socket.emit('screenshot',true);
 }
 
 
@@ -276,7 +267,19 @@ function enablebutton()
     
     }
 
-
+function blackout(name)
+{   var teampanel = document.getElementsByClassName("teampanel");
+    var teamlabel = document.getElementsByClassName("teamlabel");
+    var teamimg = document.getElementsByClassName("teamimg");
+    for(let i=0;i<teampanel.length;i++)
+    {   if(  teamlabel[i].innerHTML == name )
+        {
+               teampanel[i].style.backgroundColor = "black";
+               teamimg[i].src = "/asset/balckout.jpg";
+        }
+      
+    }
+}
 
 Array.prototype.findindexbysection = function(name)
 {

@@ -29,22 +29,38 @@
     onEx(socket, 'delete', function (data) { deleterow(data) });
     onEx(socket, 'init', function (data) { 
       table = data.table;
-      questions = data.questions; 
-      showscore = data.showscore || true; 
+      questions = data.questions;
+      currentround = data.currentround;
       init(); 
     });
+    onEx(socket, 'openanswerprojector', function (data) { 
+      if(window.name == "projector-left")
+      {
+        window.location = "/projector-left";
+      } 
+      else if(window.name == "projector-right")
+      {
+        window.location = "/projector-right";
+      }
+      else if(window.name == "projector-final")
+      {
+        window.location = "/projector-final";
+      }
+     });
+    onEx(socket, 'round', data => { currentround = data; init(); });
     onEx(socket, 'reset', function (data) { cleartable(); });
     //  socket.on('addrow',function(data){addrow(data.rank,data.name,data.score);});
     onEx(socket, 'scorechange', function (data) { setscore(data.name, data.score); table = data.datatable; });
     onEx(socket, 'setscorefactor', function (data) { factoreffect(data); });
     introduce(socket, "scoreboard");
+
   </script>
 </head>
 
-<body>
+<body id="body" onclick="back()">
 
 
-  <div class="scoreview">
+  <div class="scoreview" >
 
     <table class="table table-hover" id="scoretable">
       <thead>

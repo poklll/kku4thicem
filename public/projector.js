@@ -27,18 +27,6 @@ function addimage(data)
     
 }
 
-function roundsetup(round)
-{
-     currentround = round;
-     if(currentround == "final:the fast")
-     {
-         document.getElementById("thefast").style.visibility = "visible";
-     }
-     else
-     {
-        document.getElementById("thefast").style.visibility = "hidden";
-     }
-}
 
 function setscore(team,score)
 {   
@@ -76,12 +64,13 @@ function fullscreen(img)
 {
     document.getElementById("selected").src = img;
     document.getElementById("fullscreen").style.visibility ="visible";
+    window.open("","scoreboard");
 }
 
 function cancel()
 {
     document.getElementById("fullscreen").style.visibility ="hidden";
-    document.getElementById("ans").style.visibility ="hidden";
+
 }
 
 function selectquestion()
@@ -234,6 +223,28 @@ function resetpanel()
     //socket.emit('screenshot',true);
 }
 
+function blackout(name)
+{   var teampanel = document.getElementsByClassName("teampanel");
+    var teamlabel = document.getElementsByClassName("teamlabel");
+    var teamimg;
+    if(window.name != "projector-final")
+    {
+        teamimg = document.getElementsByClassName("teamimg");
+    }
+    else
+    {
+        teamimg = document.getElementsByClassName("teamimg");
+    }
+
+    for(let i=0;i<teampanel.length;i++)
+    {   if(  teamlabel[i].innerHTML == name )
+        {
+               teampanel[i].style.backgroundColor = "black";
+               teamimg[i].src = "/asset/balckout.jpg";
+        }
+      
+    }
+}
 Array.prototype.findindexbysection = function(name)
 {
   var i;
@@ -258,3 +269,8 @@ Number.prototype.pad = function (size) {
     while (s.length < (size || 2)) { s = "0" + s; }
     return s;
   };
+
+  function back()
+  {
+    window.open("","scoreboard");
+  }

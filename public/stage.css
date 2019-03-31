@@ -3,6 +3,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-size: 100vw 100vh;
+    background-repeat: no-repeat;
     height: 100vh;
     width: 100vw;
 }
@@ -34,26 +36,44 @@ div {
 .teambar {
     display: flex;
     width: 100vw;
-    justify-content: space-between;
+    justify-content:flex-start;
+    visibility: hidden;
 }
 
 .teamname {
     align-self: flex-start;
     font-size: 5vh;
-    background-color: black;
+    background-color: crimson;
     color: white;
+    border: 2px solid black;
 }
 
 .score {
-    align-self: flex-end;
+    font-size: 5vh;
+    padding-left: 10px;
+    background-color: white;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border: 2px solid black;
+    width: 15vw;
+}
+.factor {
     font-size: 5vh;
     margin-right: 30px;
+    padding-left: 10px;
+    background-color: white;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border: 2px solid black;
+    width: 10vw;
+    visibility: hidden;
 }
 
 .timer {
     z-index: 3;
     font-size: 100px;
-    text-align: center;
+    display:flex;
+    justify-content: flex-end;
+    padding-right: 5vw;
+    padding-bottom: 5vh;
     vertical-align: middle;
     width: 100vw;
     height: 20vh;
@@ -189,3 +209,27 @@ input {
     visibility: hidden;
 }
 
+#fullscreen {
+    z-index: 3;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    visibility: hidden;
+}
+
+#selected {
+    border: 0;
+    height: 100vh;
+    width: 100vw;
+}
+
+#cancel {
+    position: fixed;
+    height: 4vh;
+    width: 4vh;
+    border: 0;
+    align-self: flex-end;
+     margin-top: -48vh;
+}

@@ -121,7 +121,7 @@ th
 }
 #scoretable
 { 
-   width:80vw;
+   width:100vw;
    height: auto;
 }
 @media screen and (max-width: 420px)
@@ -185,7 +185,7 @@ table th:last-child{
 }
 .teamrank
 {  
-    font-size: 3vh;
+    font-size: 4vh;
     text-align:center;
 
     background-color: floralwhite;
@@ -194,7 +194,7 @@ table th:last-child{
 }
 .teamscore
 {
-    font-size: 3vh;
+    font-size: 4vh;
     color:black;
     background-color: bisque;
      text-align:center;
@@ -205,7 +205,7 @@ table th:last-child{
 {   
     
     display: flex;
-    justify-content:space-between;
+    justify-content: space-between;
     background-color: white;
     align-items: center;
     border-radius: 0px;
@@ -215,7 +215,7 @@ table th:last-child{
 }
 .teamnametext
 {
-    font-size: 3vh;
+    font-size: 5vh;
 }
 
 .factor
